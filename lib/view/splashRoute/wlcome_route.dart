@@ -1,3 +1,4 @@
+import 'package:chat_app/resources/app_fonts.dart';
 import 'package:chat_app/resources/app_paths.dart';
 import 'package:chat_app/resources/components/custom_buttons.dart';
 import 'package:chat_app/utils/routes/route_names.dart';
@@ -31,12 +32,11 @@ class _WelcomeRouteState extends State<WelcomeRoute> {
                 children: [
                   Text(
                     SplashRouteStrings.headerList[index],
-                    style: GoogleFonts.rammettoOne(
-                        fontSize: 32,
+                    style: AppFonts.headerStyled(
                         color: (themeManager.themeMode == ThemeMode.light)
                             ? SplashRouteStrings.colors[index]
                             : Colors.white,
-                        letterSpacing: 3),
+                        fontSize: 28),
                   ),
                   const SizedBox(
                     height: 30,
@@ -58,9 +58,10 @@ class _WelcomeRouteState extends State<WelcomeRoute> {
                   ),
                   if (index == 3)
                     CustomButton().roundedButton(
+                      title: "Create account",
                       onPress: () {
-                        Navigator.popUntil(context, (route) => route.isFirst);
-                        Navigator.pushReplacementNamed(
+                        // Navigator.popUntil(context, (route) => route.isFirst);
+                        Navigator.pushNamed(
                             context, RouteName.authSignUp);
                       },
                     ),
@@ -71,10 +72,10 @@ class _WelcomeRouteState extends State<WelcomeRoute> {
                         const Text("Already have account?"),
                         TextButton(
                           onPressed: () {
-                            Navigator.popUntil(context, (route) => route.isFirst);
-                        Navigator.pushReplacementNamed(
-                            context, RouteName.authSignIn);
-                            
+                            // Navigator.popUntil(
+                            //     context, (route) => route.isFirst);
+                            Navigator.pushNamed(
+                                context, RouteName.authSignIn);
                           },
                           child: const Text("Sign In."),
                         ),

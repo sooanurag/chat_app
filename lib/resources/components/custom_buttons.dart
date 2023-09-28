@@ -3,21 +3,21 @@ import 'package:flutter/material.dart';
 import '../app_strings.dart';
 
 class CustomButton {
-  roundedButton({required VoidCallback onPress}) => InkWell(
+  roundedButton({required VoidCallback onPress, required String title, Color? color }) => InkWell(
         radius: 50,
         borderRadius: BorderRadius.circular(30),
         onTap: onPress,
         child: Container(
           margin: const EdgeInsets.only(bottom: 10),
           decoration: BoxDecoration(
-            color: SplashRouteStrings.colors[3],
+            color: color ?? SplashRouteStrings.colors[3],
             borderRadius: BorderRadius.circular(30),
           ),
-          child: const Padding(
-            padding: EdgeInsets.all(18.0),
+          child:  Padding(
+            padding: const EdgeInsets.all(18.0),
             child: Text(
-              "Create account",
-              style: TextStyle(
+              title,
+              style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
                   color: Colors.white),
@@ -25,4 +25,6 @@ class CustomButton {
           ),
         ),
       );
+
+      
 }

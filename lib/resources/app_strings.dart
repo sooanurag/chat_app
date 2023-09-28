@@ -21,3 +21,22 @@ class SplashRouteStrings {
     Colors.blue[500],
   ];
 }
+
+class AppStrings {
+  static List<String> textFieldLabels = [
+    "Email",
+    "PassWord",
+    "Confirm Password",
+    "Phone(Optional)",
+    "First Name",
+    "Last Name",
+    "Info",
+  ];
+
+  static const String emailInvalid = "Enter your email address!";
+  static const String passwordInvalid = "Enter your password!";
+  static const String cPasswordInvalid = "Enter your password again!";
+  static const String firstNameInvalid = "Enter your first name";
+  static const String lastNameInvalid = "";
+  static const String infoInvalid = "";
+}
