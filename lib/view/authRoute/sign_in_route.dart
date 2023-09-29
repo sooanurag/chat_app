@@ -1,7 +1,7 @@
 import 'package:chat_app/resources/app_fonts.dart';
 import 'package:chat_app/resources/app_paths.dart';
 import 'package:chat_app/resources/app_strings.dart';
-import 'package:chat_app/resources/components/app_components.dart';
+import 'package:chat_app/resources/components/app_comp.dart';
 import 'package:chat_app/resources/components/animated_icons.dart';
 import 'package:chat_app/resources/components/custom_buttons.dart';
 import 'package:chat_app/utils/utils.dart';
@@ -53,6 +53,7 @@ class _SignInRouteState extends State<SignInRoute> {
                     ),
                     Utils.divider,
                     SignUpRouteCompotents.passwordTextField(
+                      isEnabled: true,
                       obscureText: obscureText,
                       passwordController: passwordController,
                       invalidText: AppStrings.passwordInvalid,

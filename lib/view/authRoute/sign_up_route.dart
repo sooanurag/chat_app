@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:chat_app/resources/app_fonts.dart';
 import 'package:chat_app/resources/app_paths.dart';
-import 'package:chat_app/resources/components/app_components.dart';
+import 'package:chat_app/resources/components/app_comp.dart';
 import 'package:chat_app/view_model/auth/signup_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
@@ -22,9 +22,12 @@ class _SignUpRouteState extends State<SignUpRoute> {
   final passwordController = TextEditingController();
   final cPasswordController = TextEditingController();
   final phoneController = TextEditingController();
+  final otpController = TextEditingController();
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
   final aboutController = TextEditingController();
+  final signUpFormKey = GlobalKey<FormState>();
+  final completeProfileKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
@@ -36,13 +39,12 @@ class _SignUpRouteState extends State<SignUpRoute> {
     firstNameController.dispose();
     lastNameController.dispose();
     aboutController.dispose();
+    otpController.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-    // ValueNotifier<bool> isAccountCreated = ValueNotifier<bool>(false);
-    // ValueNotifier<bool> isSuccess = ValueNotifier<bool>(false);
 
     return Scaffold(
         body: SafeArea(
@@ -70,7 +72,7 @@ class _SignUpRouteState extends State<SignUpRoute> {
                                 valueListenable: Utils.imageFile,
                                 builder: (context, value, child) {
                                   return CircleAvatar(
-                                    radius: 85,
+                                    radius: 100,
                                     backgroundImage:
                                         (Utils.imageFile.value != null)
                                             ? FileImage(
@@ -96,15 +98,50 @@ class _SignUpRouteState extends State<SignUpRoute> {
                         ),
                   Utils.divider,
                   Consumer<SignUpProvider>(builder: (context, value, child) {
+                    final signUpProvider =
+                        Provider.of<SignUpProvider>(context, listen: false);
                     return (!value.isAccountCreated)
                         ? SignUpRouteCompotents.signUpContainer(
+                            context: context,
                             emailController: emailController,
                             passwordController: passwordController,
                             cPasswordController: cPasswordController,
                             phoneController: phoneController,
+                            otpController: otpController,
+                            formKey: signUpFormKey,
                             onPress: () {
-                              value.setAccountCreateStatus(true);
-                              timerFuction();
+                              debugPrint("onPress call");
+                              debugPrint(signUpFormKey.currentState!
+                                  .validate()
+                                  .toString());
+                              if (value.buttonTitle == "Sign Up" ||
+                                  value.buttonTitle == "Verify") {
+                                if (signUpFormKey.currentState!.validate()) {
+                                  debugPrint(value.buttonTitle);
+                                  (value.buttonTitle == "Sign Up")
+                                      ? value.createAccountWithEmailPassowrd(
+                                          context: context,
+                                          email: emailController.text,
+                                          password: passwordController.text,
+                                        )
+                                      : value.createAccountWithPhone(
+                                          context: context,
+                                          phone: phoneController.text,
+                                          otp: otpController.text,
+                                        );
+
+                                  value.setAccountCreateStatus(true);
+                                  timerFuction();
+                                }
+                              } else if (value.buttonTitle == "Send OTP") {
+                                if (signUpFormKey.currentState!.validate()) {
+                                  value.verifyPhone(
+                                      phone: phoneController.text);
+                                }
+                                signUpProvider.setPhoneStatus(false);
+                                signUpProvider.setButtonValue(
+                                    buttonTitle: "Verify");
+                              }
                             },
                           )
                         : (!value.isSuccess)
@@ -113,26 +150,35 @@ class _SignUpRouteState extends State<SignUpRoute> {
                                 repeat: false,
                               )
                             : SignUpRouteCompotents.completeProfileContainer(
+                                formKey: completeProfileKey,
                                 firstNameController: firstNameController,
                                 lastNameController: lastNameController,
                                 aboutController: aboutController,
-                                onPress: () {},
+                                onPress: () async {
+                                  if (completeProfileKey.currentState!
+                                      .validate()) {
+                                    signUpProvider.updateUserData(
+                                      context: context,
+                                      firstName: firstNameController.text,
+                                      lastName: lastNameController.text,
+                                      info: aboutController.text,
+                                      profilePicture: (Utils.imageFile.value !=
+                                              null)
+                                          ? await signUpProvider
+                                              .uploadDataToStorage(
+                                                  imageFile:
+                                                      Utils.imageFile.value!,
+                                                  context: context)
+                                          : null,
+                                    );
+                                    debugPrint("saved user data");
+                                  }
+                                },
                               );
                   }),
                 ],
               );
             }),
-            // ValueListenableBuilder(
-            //     valueListenable: isSuccess,
-            //     builder: (context, value, child) {
-            //       return
-            //     }),
-
-            // ValueListenableBuilder(
-            //     valueListenable: isAccountCreated,
-            //     builder: (context, value, child) {
-            //       return
-            //     }),
           ],
         ),
       ),

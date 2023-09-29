@@ -3,6 +3,7 @@ import 'package:chat_app/services/firebase_options.dart';
 import 'package:chat_app/utils/routes/route_names.dart';
 import 'package:chat_app/view_model/auth/signup_provider.dart';
 import 'package:chat_app/view_model/theme/theme_manager.dart';
+import 'package:chat_app/view_model/user_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -24,11 +25,13 @@ class MainApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeManager()),
         ChangeNotifierProvider(create: (_) => SignUpProvider()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
       ],
       child: Builder(
         builder: (context) {
           final themeManager = Provider.of<ThemeManager>(context);
           return MaterialApp(
+            debugShowCheckedModeBanner: false,
             themeMode: themeManager.themeMode,
             theme: lightTheme,
             darkTheme: darkTheme,

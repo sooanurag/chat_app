@@ -23,8 +23,10 @@ class Utils {
     bool obscure = false,
     Widget? suffixIcon,
     void Function(String)? onChanged,
+    bool? isEnabled,
   }) {
     return TextFormField(
+      enabled: isEnabled,
       onChanged: onChanged,
       controller: inputController,
       obscureText: obscure,
@@ -35,12 +37,15 @@ class Utils {
               currentNode: currentFocusNode!,
               nextNode: nextNode!)
           : null,
-      validator: (value) {
+      validator:(invalidText!="") ?(value) {
         if (value!.isEmpty) {
           return invalidText;
         }
-        return null;
-      },
+        else{
+          return null;
+        }
+        
+      }:null,
       decoration: InputDecoration(
         label: Text(label),
         border: const OutlineInputBorder(
@@ -68,6 +73,8 @@ class Utils {
 
 // showProfilePicturesOptionsDialog
   static ValueNotifier<File?> imageFile = ValueNotifier<File?>(null);
+
+
   static showProfilePicturesOptionsDialog({
     required BuildContext context,
   }) {
