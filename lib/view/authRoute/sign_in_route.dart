@@ -31,13 +31,14 @@ class _SignInRouteState extends State<SignInRoute> {
     return Scaffold(
       body: SafeArea(
         child: Center(
-          child: Column(
+          child: ListView(
             children: [
               Lottie.asset(AnimationPath.signIn,
                   height: screenSize.height * 0.4),
               Text(
                 "Sign-In!",
                 style: AppFonts.headerStyled(fontSize: 24),
+                textAlign: TextAlign.center,
               ),
               Utils.divider,
               Container(

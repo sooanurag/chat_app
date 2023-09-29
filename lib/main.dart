@@ -1,6 +1,7 @@
 import 'package:chat_app/resources/theme/theme_constants.dart';
 import 'package:chat_app/services/firebase_options.dart';
 import 'package:chat_app/utils/routes/route_names.dart';
+import 'package:chat_app/view_model/auth/signup_provider.dart';
 import 'package:chat_app/view_model/theme/theme_manager.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,7 @@ class MainApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeManager()),
+        ChangeNotifierProvider(create: (_) => SignUpProvider()),
       ],
       child: Builder(
         builder: (context) {
