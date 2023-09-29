@@ -109,7 +109,7 @@ class _SignUpRouteState extends State<SignUpRoute> {
                             phoneController: phoneController,
                             otpController: otpController,
                             formKey: signUpFormKey,
-                            onPress: () {
+                            onPress: () async {
                               debugPrint("onPress call");
                               debugPrint(signUpFormKey.currentState!
                                   .validate()
@@ -119,19 +119,22 @@ class _SignUpRouteState extends State<SignUpRoute> {
                                 if (signUpFormKey.currentState!.validate()) {
                                   debugPrint(value.buttonTitle);
                                   (value.buttonTitle == "Sign Up")
-                                      ? value.createAccountWithEmailPassowrd(
+                                      ? await value.createAccountWithEmailPassowrd(
                                           context: context,
                                           email: emailController.text,
                                           password: passwordController.text,
                                         )
-                                      : value.createAccountWithPhone(
+                                      : await value.createAccountWithPhone(
                                           context: context,
                                           phone: phoneController.text,
                                           otp: otpController.text,
                                         );
-
-                                  value.setAccountCreateStatus(true);
+                                  if(!signUpProvider.isExceptionOccured){
+                                    value.setAccountCreateStatus(true);
                                   timerFuction();
+                                  }
+
+                                  
                                 }
                               } else if (value.buttonTitle == "Send OTP") {
                                 if (signUpFormKey.currentState!.validate()) {

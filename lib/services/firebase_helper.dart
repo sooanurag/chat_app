@@ -1,10 +1,12 @@
 import 'dart:io';
 
 import 'package:chat_app/model/user_model.dart';
+import 'package:chat_app/view_model/auth/signup_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:provider/provider.dart';
 
 import '../utils/utils.dart';
 
@@ -26,18 +28,23 @@ class FirebaseHelper {
   }) async {
     UserCredential? userCredential;
     debugPrint("inside create Account: fireBaseHelper");
+    final signUpProvider = Provider.of<SignUpProvider>(context, listen: false);
+    signUpProvider.setExceptionStatus(status: true);
     try {
       userCredential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email.trim(),
         password: password.trim(),
       );
+      signUpProvider.setExceptionStatus(status: false);
     } on FirebaseAuthException catch (e) {
       if (context.mounted) {
+        signUpProvider.setExceptionStatus(status: true);
         ShowDialogModel.alertDialog(context, "Error", Text(e.code.toString()), [
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
+              signUpProvider.setExceptionStatus(status: false);
             },
             child: const Text("close"),
           ),
@@ -132,7 +139,8 @@ class FirebaseHelper {
         .set(userData.toMap());
   }
 
-  static Future<String> uploadDataToFirebaseStorage({required File imageFile, required UserModel userData}) async {
+  static Future<String> uploadDataToFirebaseStorage(
+      {required File imageFile, required UserModel userData}) async {
     UploadTask uploadTask = FirebaseStorage.instance
         .ref("profilepicture")
         .child(userData.userId.toString())

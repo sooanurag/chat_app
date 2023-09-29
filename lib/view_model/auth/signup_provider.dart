@@ -15,6 +15,13 @@ class SignUpProvider with ChangeNotifier {
   bool _isEnabled = true;
   bool _isPhoneEnabled = true;
   bool _emailPasswordValidator = true;
+  bool _isExceptionOccured = false;
+
+  bool get isExceptionOccured => _isExceptionOccured;
+  void setExceptionStatus({required bool status}) {
+    _isExceptionOccured = status;
+    notifyListeners();
+  }
 
   bool get emailPasswordValidator => _emailPasswordValidator;
   void setemailPasswordValidatorStatus({required bool status}) {
@@ -58,7 +65,7 @@ class SignUpProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void createAccountWithEmailPassowrd({
+  Future<void> createAccountWithEmailPassowrd({
     required BuildContext context,
     required String email,
     required String password,
@@ -89,7 +96,7 @@ class SignUpProvider with ChangeNotifier {
     FirebaseHelper.verfyPhone(phone: phone);
   }
 
-  void createAccountWithPhone({
+  Future<void> createAccountWithPhone({
     required BuildContext context,
     required String phone,
     required String otp,
@@ -113,7 +120,7 @@ class SignUpProvider with ChangeNotifier {
     }
   }
 
-  void updateUserData({
+  Future<void> updateUserData({
     required BuildContext context,
     String? firstName,
     String? lastName,
