@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:chat_app/model/user_model.dart';
+import 'package:chat_app/view_model/auth/signin_provider.dart';
 import 'package:chat_app/view_model/auth/signup_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -57,41 +58,74 @@ class FirebaseHelper {
 
   static String? _phoneVerficationId;
 
-  static void verfyPhone({
+  static Future<void> verfyPhone({
     required String phone,
+    required BuildContext context,
   }) async {
     String inputPhoneNumber = "+91$phone";
-    await FirebaseAuth.instance.verifyPhoneNumber(
-      phoneNumber: inputPhoneNumber,
-      verificationCompleted: (phoneAuthCredential) {},
-      verificationFailed: (error) {},
-      codeSent: (verificationId, forceResendingToken) {
-        _phoneVerficationId = verificationId;
-      },
-      codeAutoRetrievalTimeout: (verificationId) {},
-      timeout: const Duration(seconds: 20),
-    );
+    final signUpProvider = Provider.of<SignUpProvider>(context, listen: false);
+    final signInProvider = Provider.of<SignInProvider>(context, listen: false);
+
+    try {
+      signInProvider.setExceptionOccuredStatus(status: true);
+      signUpProvider.setExceptionStatus(status: true);
+      if (phone.length != 10) {
+        throw FirebaseAuthException(code: "Enter 10-digits Phone number!");
+      }
+      await FirebaseAuth.instance.verifyPhoneNumber(
+        phoneNumber: inputPhoneNumber,
+        verificationCompleted: (phoneAuthCredential) {},
+        verificationFailed: (error) {},
+        codeSent: (verificationId, forceResendingToken) {
+          _phoneVerficationId = verificationId;
+        },
+        codeAutoRetrievalTimeout: (verificationId) {},
+        timeout: const Duration(seconds: 20),
+      );
+      signInProvider.setExceptionOccuredStatus(status: false);
+      signUpProvider.setExceptionStatus(status: false);
+    } on FirebaseAuthException catch (e) {
+      if (context.mounted) {
+        signUpProvider.setExceptionStatus(status: true);
+        ShowDialogModel.alertDialog(context, "Error", Text(e.code.toString()), [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              signUpProvider.setExceptionStatus(status: false);
+            },
+            child: const Text("close"),
+          ),
+        ]);
+      }
+    }
   }
 
   static Future<UserCredential?> verifyOtp({
     required String otp,
     required BuildContext context,
   }) async {
+    final signUpProvider = Provider.of<SignUpProvider>(context, listen: false);
+    final signInProvider = Provider.of<SignInProvider>(context, listen: false);
     UserCredential? userCredential;
     PhoneAuthCredential credential = PhoneAuthProvider.credential(
       verificationId: _phoneVerficationId!,
       smsCode: otp,
     );
-
     try {
+      signInProvider.setExceptionOccuredStatus(status: true);
+      signUpProvider.setExceptionStatus(status: true);
       userCredential = await FirebaseAuth.instance.signInWithCredential(
         credential,
       );
+      signInProvider.setExceptionOccuredStatus(status: false);
+      signUpProvider.setExceptionStatus(status: false);
     } on FirebaseAuthException catch (e) {
       if (context.mounted) {
         ShowDialogModel.alertDialog(context, "Error", Text(e.code.toString()), [
           TextButton(
             onPressed: () {
+              signInProvider.setExceptionOccuredStatus(status: false);
+              signUpProvider.setExceptionStatus(status: false);
               Navigator.of(context).pop();
             },
             child: const Text("close"),
@@ -108,17 +142,21 @@ class FirebaseHelper {
     required BuildContext context,
   }) async {
     UserCredential? userCredential;
+    final signInProvider = Provider.of<SignInProvider>(context, listen: false);
 
     try {
+      signInProvider.setExceptionOccuredStatus(status: true);
       userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email.trim(),
         password: password.trim(),
       );
+      signInProvider.setExceptionOccuredStatus(status: false);
     } on FirebaseAuthException catch (e) {
       if (context.mounted) {
         ShowDialogModel.alertDialog(context, "Error", Text(e.code.toString()), [
           TextButton(
             onPressed: () {
+              signInProvider.setExceptionOccuredStatus(status: false);
               Navigator.of(context).pop();
             },
             child: const Text("close"),
@@ -130,7 +168,7 @@ class FirebaseHelper {
     return userCredential;
   }
 
-  static storeUserData({
+  static Future<void> storeUserData({
     required UserModel userData,
   }) async {
     await FirebaseFirestore.instance

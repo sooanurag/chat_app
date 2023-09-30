@@ -36,6 +36,7 @@ class AppStrings {
   static const String emailInvalid = "Enter your email address!";
   static const String passwordInvalid = "Enter your password!";
   static const String cPasswordInvalid = "Enter your password again!";
+  static const String phoneInvalid = "Enter your 10-digits phone number!";
   static const String firstNameInvalid = "Name is required!";
   static const String lastNameInvalid = "";
   static const String infoInvalid = "";

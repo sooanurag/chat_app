@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:chat_app/resources/app_paths.dart';
 import 'package:flutter/material.dart';
-import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lottie/lottie.dart';
 
@@ -124,13 +123,13 @@ class Utils {
   }
 
 // crop Image
-  static cropImage(XFile pickedImageFile) async {
-    CroppedFile? croppedIMageFile =
-        await ImageCropper().cropImage(sourcePath: pickedImageFile.path);
-    if (croppedIMageFile != null) {
-      imageFile.value = File(croppedIMageFile.path);
-    }
-  }
+  // static cropImage(XFile pickedImageFile) async {
+  //   CroppedFile? croppedIMageFile =
+  //       await ImageCropper().cropImage(sourcePath: pickedImageFile.path);
+  //   if (croppedIMageFile != null) {
+  //     imageFile.value = File(croppedIMageFile.path);
+  //   }
+  // }
 
   static get profileDefault => Container(
         decoration: BoxDecoration(

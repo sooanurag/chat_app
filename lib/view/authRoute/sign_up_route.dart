@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:chat_app/resources/app_fonts.dart';
 import 'package:chat_app/resources/app_paths.dart';
-import 'package:chat_app/resources/components/app_comp.dart';
+import 'package:chat_app/resources/components/signup_route_components/choose_profilepic.dart';
+import 'package:chat_app/resources/components/signup_route_components/complete_profile_form.dart';
+import 'package:chat_app/resources/components/signup_route_components/signup_form.dart';
 import 'package:chat_app/view_model/auth/signup_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
@@ -53,18 +55,20 @@ class _SignUpRouteState extends State<SignUpRoute> {
           children: [
             Consumer<SignUpProvider>(builder: (context, value, child) {
               timerFuction() {
-                Timer(const Duration(seconds: 3), () {
-                  value.setSuccessStatus(true);
-                });
+                Timer(
+                  const Duration(seconds: 3),
+                  () {
+                    value.setLoadingStatus(true);
+                  },
+                );
               }
 
               return Column(
                 children: [
-                  (!value.isSuccess)
+                  (!value.isLoading)
                       ? Lottie.asset(AnimationPath.signUp,
                           height: screenSize.height * 0.35)
-                      : SignUpRouteCompotents.profilePicure(
-                          context: context,
+                      : chooseProfilePicture(
                           background: Container(
                             margin: const EdgeInsets.all(20),
                             height: screenSize.height * 0.2,
@@ -85,9 +89,10 @@ class _SignUpRouteState extends State<SignUpRoute> {
                                   );
                                 }),
                           ),
+                          context: context,
                         ),
                   Utils.divider,
-                  (!value.isSuccess)
+                  (!value.isLoading)
                       ? Text(
                           "Create Account!",
                           style: AppFonts.headerStyled(fontSize: 22),
@@ -101,7 +106,7 @@ class _SignUpRouteState extends State<SignUpRoute> {
                     final signUpProvider =
                         Provider.of<SignUpProvider>(context, listen: false);
                     return (!value.isAccountCreated)
-                        ? SignUpRouteCompotents.signUpContainer(
+                        ? signUpForm(
                             context: context,
                             emailController: emailController,
                             passwordController: passwordController,
@@ -119,7 +124,8 @@ class _SignUpRouteState extends State<SignUpRoute> {
                                 if (signUpFormKey.currentState!.validate()) {
                                   debugPrint(value.buttonTitle);
                                   (value.buttonTitle == "Sign Up")
-                                      ? await value.createAccountWithEmailPassowrd(
+                                      ? await value
+                                          .createAccountWithEmailPassowrd(
                                           context: context,
                                           email: emailController.text,
                                           password: passwordController.text,
@@ -129,17 +135,15 @@ class _SignUpRouteState extends State<SignUpRoute> {
                                           phone: phoneController.text,
                                           otp: otpController.text,
                                         );
-                                  if(!signUpProvider.isExceptionOccured){
+                                  if (!signUpProvider.isExceptionOccured) {
                                     value.setAccountCreateStatus(true);
-                                  timerFuction();
+                                    timerFuction();
                                   }
-
-                                  
                                 }
                               } else if (value.buttonTitle == "Send OTP") {
                                 if (signUpFormKey.currentState!.validate()) {
                                   value.verifyPhone(
-                                      phone: phoneController.text);
+                                      phone: phoneController.text,context: context,);
                                 }
                                 signUpProvider.setPhoneStatus(false);
                                 signUpProvider.setButtonValue(
@@ -147,12 +151,12 @@ class _SignUpRouteState extends State<SignUpRoute> {
                               }
                             },
                           )
-                        : (!value.isSuccess)
+                        : (!value.isLoading)
                             ? Lottie.asset(
                                 AnimationPath.loadingTwo,
                                 repeat: false,
                               )
-                            : SignUpRouteCompotents.completeProfileContainer(
+                            : completeProfileForm(
                                 formKey: completeProfileKey,
                                 firstNameController: firstNameController,
                                 lastNameController: lastNameController,

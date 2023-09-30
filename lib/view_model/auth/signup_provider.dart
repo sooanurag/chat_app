@@ -8,57 +8,57 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class SignUpProvider with ChangeNotifier {
-  bool _isAccountCreated = false;
-  bool _isSuccess = false;
-  bool _isPhone = true;
-  String _buttonTitle = "Sign Up";
-  bool _isEnabled = true;
-  bool _isPhoneEnabled = true;
-  bool _emailPasswordValidator = true;
+  
   bool _isExceptionOccured = false;
-
   bool get isExceptionOccured => _isExceptionOccured;
   void setExceptionStatus({required bool status}) {
     _isExceptionOccured = status;
     notifyListeners();
   }
 
+  bool _emailPasswordValidator = true;
   bool get emailPasswordValidator => _emailPasswordValidator;
   void setemailPasswordValidatorStatus({required bool status}) {
     _emailPasswordValidator = status;
     notifyListeners();
   }
 
+  bool _isPhoneEnabled = true;
   bool get isPhoneEnabled => _isPhoneEnabled;
   void setPhoneEnableStatus({required bool status}) {
     _isPhoneEnabled = status;
     notifyListeners();
   }
 
+  bool _isEnabled = true;
   bool get isEnabled => _isEnabled;
   void setEnableStatus({required bool status}) {
     _isEnabled = status;
     notifyListeners();
   }
 
+  bool _isAccountCreated = false;
   bool get isAccountCreated => _isAccountCreated;
   void setAccountCreateStatus(bool status) {
     _isAccountCreated = status;
     notifyListeners();
   }
 
-  bool get isSuccess => _isSuccess;
-  void setSuccessStatus(bool status) {
-    _isSuccess = status;
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+  void setLoadingStatus(bool status) {
+    _isLoading = status;
     notifyListeners();
   }
 
+  bool _isPhone = true;
   bool get isPhone => _isPhone;
   void setPhoneStatus(bool status) {
     _isPhone = status;
     notifyListeners();
   }
 
+  String _buttonTitle = "Sign Up";
   String get buttonTitle => _buttonTitle;
   void setButtonValue({required String buttonTitle}) {
     _buttonTitle = buttonTitle;
@@ -92,8 +92,8 @@ class SignUpProvider with ChangeNotifier {
     }
   }
 
-  void verifyPhone({required String phone}) {
-    FirebaseHelper.verfyPhone(phone: phone);
+  void verifyPhone({required String phone,required BuildContext context}) {
+    FirebaseHelper.verfyPhone(phone: phone,context: context,);
   }
 
   Future<void> createAccountWithPhone({
