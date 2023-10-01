@@ -3,6 +3,8 @@ import 'package:chat_app/services/firebase_options.dart';
 import 'package:chat_app/utils/routes/route_names.dart';
 import 'package:chat_app/view_model/auth/signin_provider.dart';
 import 'package:chat_app/view_model/auth/signup_provider.dart';
+import 'package:chat_app/view_model/home/home_provider.dart';
+import 'package:chat_app/view_model/home/search_provider.dart';
 import 'package:chat_app/view_model/theme/theme_manager.dart';
 import 'package:chat_app/view_model/user_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -28,6 +30,8 @@ class MainApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => SignUpProvider()),
         ChangeNotifierProvider(create: (_) => SignInProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => HomeProvider()),
+        ChangeNotifierProvider(create: (_) => SearchProvider()),
       ],
       child: Builder(
         builder: (context) {

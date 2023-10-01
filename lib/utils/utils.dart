@@ -1,19 +1,23 @@
 import 'dart:io';
 
+import 'package:chat_app/resources/app_colors.dart';
 import 'package:chat_app/resources/app_paths.dart';
+import 'package:chat_app/view_model/theme/theme_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lottie/lottie.dart';
+import 'package:provider/provider.dart';
 
 class Utils {
   static const divider = SizedBox(
     height: 20,
   );
+
 // customTextFormField
   static TextFormField customTextFormField({
     required TextEditingController inputController,
     required String invalidText,
-    required String label,
+    String? label,
     String? hint,
     required Widget prefixIcon,
     FocusNode? currentFocusNode,
@@ -23,8 +27,15 @@ class Utils {
     Widget? suffixIcon,
     void Function(String)? onChanged,
     bool? isEnabled,
+    bool? isFilled,
+    Color? fillColor,
+    Color? prefixIconColor,
+    Color? suffixIconColor,
+    Color? cursorColor,
+    EdgeInsetsGeometry? contentPadding,
   }) {
     return TextFormField(
+      cursorColor: cursorColor,
       enabled: isEnabled,
       onChanged: onChanged,
       controller: inputController,
@@ -36,17 +47,22 @@ class Utils {
               currentNode: currentFocusNode!,
               nextNode: nextNode!)
           : null,
-      validator:(invalidText!="") ?(value) {
-        if (value!.isEmpty) {
-          return invalidText;
-        }
-        else{
-          return null;
-        }
-        
-      }:null,
+      validator: (invalidText != "")
+          ? (value) {
+              if (value!.isEmpty) {
+                return invalidText;
+              } else {
+                return null;
+              }
+            }
+          : null,
       decoration: InputDecoration(
-        label: Text(label),
+        contentPadding: contentPadding,
+        filled: isFilled,
+        fillColor: fillColor,
+        prefixIconColor: prefixIconColor,
+        suffixIconColor: suffixIconColor,
+        label:(label!=null)? Text(label):null,
         border: const OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(12)),
         ),
@@ -72,7 +88,6 @@ class Utils {
 
 // showProfilePicturesOptionsDialog
   static ValueNotifier<File?> imageFile = ValueNotifier<File?>(null);
-
 
   static showProfilePicturesOptionsDialog({
     required BuildContext context,

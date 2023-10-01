@@ -1,4 +1,5 @@
 import 'package:chat_app/services/firebase_helper.dart';
+import 'package:chat_app/utils/routes/route_names.dart';
 import 'package:chat_app/view_model/user_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -42,10 +43,12 @@ class SignInProvider with ChangeNotifier {
     );
 
     if (userCredential != null) {
-      UserModel? userData =
-          await FirebaseHelper.fetchUserData(userId: userCredential.user!.uid);
-      debugPrint(userData?.fullName);
-      userProvider.setUserData(userData: userData!);
+      UserModel? userData = await FirebaseHelper.fetchUserData(
+        userId: userCredential.user!.uid,
+      );
+      userData!.firebaseUser = userCredential.user;
+      debugPrint(userData.fullName);
+      userProvider.setUserData(userData: userData);
     }
   }
 
@@ -70,8 +73,9 @@ class SignInProvider with ChangeNotifier {
     if (userCredential != null) {
       UserModel? userData =
           await FirebaseHelper.fetchUserData(userId: userCredential.user!.uid);
-      debugPrint(userData?.fullName);
-      userProvider.setUserData(userData: userData!);
+      userData!.firebaseUser = userCredential.user;
+      debugPrint(userData.fullName);
+      userProvider.setUserData(userData: userData);
     }
   }
 
@@ -96,6 +100,9 @@ class SignInProvider with ChangeNotifier {
       );
       if (!signInProvider.isExceptionOccured) {
         debugPrint("sign In success");
+        if(context.mounted){
+        Navigator.popUntil(context, (route) => route.isFirst);
+        Navigator.pushReplacementNamed(context, RouteName.home);}
       }
     } else if (buttonValue.value == "Send OTP") {
       await signInProvider.verifyPhone(
@@ -113,6 +120,9 @@ class SignInProvider with ChangeNotifier {
       );
       if (!signInProvider.isExceptionOccured) {
         debugPrint("signed-In with Phone");
+        if(context.mounted){
+        Navigator.popUntil(context, (route) => route.isFirst);
+        Navigator.pushReplacementNamed(context, RouteName.home);}
       }
     }
   }

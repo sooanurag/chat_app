@@ -1,14 +1,18 @@
 import 'dart:io';
 
 import 'package:chat_app/model/user_model.dart';
+import 'package:chat_app/repository/firebase_repo/update_userdata.dart';
+import 'package:chat_app/repository/firebase_repo/upload_firestore.dart';
 import 'package:chat_app/services/firebase_helper.dart';
 import 'package:chat_app/view_model/user_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../utils/routes/route_names.dart';
+import '../../utils/utils.dart';
+
 class SignUpProvider with ChangeNotifier {
-  
   bool _isExceptionOccured = false;
   bool get isExceptionOccured => _isExceptionOccured;
   void setExceptionStatus({required bool status}) {
@@ -71,7 +75,6 @@ class SignUpProvider with ChangeNotifier {
     required String password,
   }) async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-    debugPrint("inside createAccount : Provider");
 
     UserCredential? userCredential =
         await FirebaseHelper.createUserwithEmailPassword(
@@ -82,6 +85,7 @@ class SignUpProvider with ChangeNotifier {
     if (userCredential != null) {
       userProvider.setUserData(
         userData: UserModel(
+          firebaseUser: userCredential.user as User,
           userId: userCredential.user!.uid,
           emailId: email,
         ),
@@ -92,8 +96,11 @@ class SignUpProvider with ChangeNotifier {
     }
   }
 
-  void verifyPhone({required String phone,required BuildContext context}) {
-    FirebaseHelper.verfyPhone(phone: phone,context: context,);
+  void verifyPhone({required String phone, required BuildContext context}) {
+    FirebaseHelper.verfyPhone(
+      phone: phone,
+      context: context,
+    );
   }
 
   Future<void> createAccountWithPhone({
@@ -110,6 +117,7 @@ class SignUpProvider with ChangeNotifier {
     if (userCredential != null) {
       userProvider.setUserData(
         userData: UserModel(
+          firebaseUser: userCredential.user,
           userId: userCredential.user!.uid,
           phoneNumber: phone,
         ),
@@ -130,29 +138,95 @@ class SignUpProvider with ChangeNotifier {
     bool? isArchived,
     String? info,
   }) async {
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    UserModel updateUser = userProvider.userData;
-    updateUser.fullName = '${firstName?.trim()} ${lastName?.trim()}';
-    updateUser.profilePicture =
-        profilePicture?.trim() ?? updateUser.profilePicture;
-    updateUser.activeStatus = activeStatus ?? updateUser.activeStatus;
-    updateUser.isPinned = isPinned ?? updateUser.isPinned;
-    updateUser.isArchived = isArchived ?? updateUser.isArchived;
-    updateUser.info = info?.trim() ?? updateUser.info;
-
-    userProvider.setUserData(userData: updateUser);
-
-    FirebaseHelper.storeUserData(userData: userProvider.userData);
+    await updateUserDataRepo(
+      context: context,
+      firstName: firstName,
+      lastName: lastName,
+      profilePicture: profilePicture,
+      activeStatus: activeStatus,
+      isArchived: isArchived,
+      isPinned: isPinned,
+      info: info,
+    );
   }
 
   Future<String> uploadDataToStorage({
     required File imageFile,
     required BuildContext context,
   }) async {
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    return await uploadDataToStorageRepo(
+      imageFile: imageFile,
+      context: context,
+    );
+  }
 
-    String imageFileURL = await FirebaseHelper.uploadDataToFirebaseStorage(
-        imageFile: imageFile, userData: userProvider.userData);
-    return imageFileURL;
+  Future<void> onPressSignUpForm({
+    required signUpFormKey,
+    required value,
+    required BuildContext context,
+    required emailController,
+    required passwordController,
+    required phoneController,
+    required otpController,
+    required signUpProvider,
+    required timerFuction,
+  }) async {
+
+    debugPrint(signUpFormKey.currentState!.validate().toString());
+    if (value.buttonTitle == "Sign Up" || value.buttonTitle == "Verify") {
+      if (signUpFormKey.currentState!.validate()) {
+        debugPrint(value.buttonTitle);
+        (value.buttonTitle == "Sign Up")
+            ? await value.createAccountWithEmailPassowrd(
+                context: context,
+                email: emailController.text,
+                password: passwordController.text,
+              )
+            : await value.createAccountWithPhone(
+                context: context,
+                phone: phoneController.text,
+                otp: otpController.text,
+              );
+        if (!signUpProvider.isExceptionOccured) {
+          value.setAccountCreateStatus(true);
+          timerFuction();
+        }
+      }
+    } else if (value.buttonTitle == "Send OTP") {
+      if (signUpFormKey.currentState!.validate()) {
+        value.verifyPhone(
+          phone: phoneController.text,
+          context: context,
+        );
+      }
+      signUpProvider.setPhoneStatus(false);
+      signUpProvider.setButtonValue(buttonTitle: "Verify");
+    }
+  }
+
+  Future<void> onPressCompleteProfileForm({
+    required completeProfileKey,
+    required signUpProvider,
+    required BuildContext context,
+    required firstNameController,
+    required lastNameController,
+    required aboutController,
+  }) async {
+    if (completeProfileKey.currentState!.validate()) {
+      signUpProvider.updateUserData(
+        context: context,
+        firstName: firstNameController.text,
+        lastName: lastNameController.text,
+        info: aboutController.text,
+        profilePicture: (Utils.imageFile.value != null)
+            ? await signUpProvider.uploadDataToStorage(
+                imageFile: Utils.imageFile.value!, context: context)
+            : null,
+      );
+      debugPrint("saved user data");
+      if(context.mounted){
+        Navigator.popUntil(context, (route) => route.isFirst);
+        Navigator.pushReplacementNamed(context, RouteName.home);}
+    }
   }
 }

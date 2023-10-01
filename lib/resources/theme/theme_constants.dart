@@ -1,7 +1,9 @@
+import 'package:chat_app/resources/app_colors.dart';
 import 'package:flutter/material.dart';
 
 var kColorScheme = ColorScheme.fromSeed(
-  seedColor: Colors.blue[400]!,
+  seedColor: AppColors.defaultGreenYellow[0],
+
 );
 
 var kDarkColorScheme = ColorScheme.fromSeed(
@@ -12,6 +14,8 @@ var kDarkColorScheme = ColorScheme.fromSeed(
 ThemeData lightTheme = ThemeData().copyWith(
   useMaterial3: true,
   colorScheme: kColorScheme,
+
+
 );
 
 ThemeData darkTheme = ThemeData.dark().copyWith(

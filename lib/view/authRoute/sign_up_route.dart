@@ -115,40 +115,17 @@ class _SignUpRouteState extends State<SignUpRoute> {
                             otpController: otpController,
                             formKey: signUpFormKey,
                             onPress: () async {
-                              debugPrint("onPress call");
-                              debugPrint(signUpFormKey.currentState!
-                                  .validate()
-                                  .toString());
-                              if (value.buttonTitle == "Sign Up" ||
-                                  value.buttonTitle == "Verify") {
-                                if (signUpFormKey.currentState!.validate()) {
-                                  debugPrint(value.buttonTitle);
-                                  (value.buttonTitle == "Sign Up")
-                                      ? await value
-                                          .createAccountWithEmailPassowrd(
-                                          context: context,
-                                          email: emailController.text,
-                                          password: passwordController.text,
-                                        )
-                                      : await value.createAccountWithPhone(
-                                          context: context,
-                                          phone: phoneController.text,
-                                          otp: otpController.text,
-                                        );
-                                  if (!signUpProvider.isExceptionOccured) {
-                                    value.setAccountCreateStatus(true);
-                                    timerFuction();
-                                  }
-                                }
-                              } else if (value.buttonTitle == "Send OTP") {
-                                if (signUpFormKey.currentState!.validate()) {
-                                  value.verifyPhone(
-                                      phone: phoneController.text,context: context,);
-                                }
-                                signUpProvider.setPhoneStatus(false);
-                                signUpProvider.setButtonValue(
-                                    buttonTitle: "Verify");
-                              }
+                              await signUpProvider.onPressSignUpForm(
+                                signUpFormKey: signUpFormKey,
+                                value: value,
+                                context: context,
+                                emailController: emailController,
+                                passwordController: passwordController,
+                                phoneController: phoneController,
+                                otpController: otpController,
+                                signUpProvider: signUpProvider,
+                                timerFuction: timerFuction,
+                              );
                             },
                           )
                         : (!value.isLoading)
@@ -162,24 +139,14 @@ class _SignUpRouteState extends State<SignUpRoute> {
                                 lastNameController: lastNameController,
                                 aboutController: aboutController,
                                 onPress: () async {
-                                  if (completeProfileKey.currentState!
-                                      .validate()) {
-                                    signUpProvider.updateUserData(
-                                      context: context,
-                                      firstName: firstNameController.text,
-                                      lastName: lastNameController.text,
-                                      info: aboutController.text,
-                                      profilePicture: (Utils.imageFile.value !=
-                                              null)
-                                          ? await signUpProvider
-                                              .uploadDataToStorage(
-                                                  imageFile:
-                                                      Utils.imageFile.value!,
-                                                  context: context)
-                                          : null,
-                                    );
-                                    debugPrint("saved user data");
-                                  }
+                                  await signUpProvider.onPressCompleteProfileForm(
+                                    completeProfileKey: completeProfileKey,
+                                    signUpProvider: signUpProvider,
+                                    context: context,
+                                    firstNameController: firstNameController,
+                                    lastNameController: lastNameController,
+                                    aboutController: aboutController,
+                                  );
                                 },
                               );
                   }),

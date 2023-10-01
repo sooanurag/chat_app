@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
+
 class UserModel {
+  User? firebaseUser;
   String? userId;
   String? fullName;
   String? emailId;
@@ -8,9 +11,11 @@ class UserModel {
   bool? isPinned;
   bool? isArchived;
   String? info;
+  List<String>? userNameListForSearch;
 
   UserModel(
       {this.userId,
+      this.firebaseUser,
       this.fullName,
       this.emailId,
       this.profilePicture,
@@ -42,7 +47,8 @@ class UserModel {
       "activeStatus": activeStatus,
       "isArchived": isArchived,
       "isPinned": isPinned,
-      "info":info,
+      "info": info,
+      "userNameListForSearch": userNameListForSearch,
     };
   }
 }

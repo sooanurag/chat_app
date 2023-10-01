@@ -35,7 +35,7 @@ class _SignInRouteState extends State<SignInRoute> {
 
     emailController.dispose();
     passwordController.dispose();
-    passwordController.dispose();
+    phoneController.dispose();
     otpController.dispose();
   }
 

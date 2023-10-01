@@ -12,6 +12,8 @@ import 'package:provider/provider.dart';
 import '../utils/utils.dart';
 
 class FirebaseHelper {
+  static final firebaseInstance = FirebaseAuth.instance;
+
   static Future<UserModel?> fetchUserData({required String userId}) async {
     UserModel? userData;
     DocumentSnapshot docsSnap =
@@ -32,11 +34,13 @@ class FirebaseHelper {
     final signUpProvider = Provider.of<SignUpProvider>(context, listen: false);
     signUpProvider.setExceptionStatus(status: true);
     try {
+      debugPrint("inside try");
       userCredential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          await firebaseInstance.createUserWithEmailAndPassword(
         email: email.trim(),
         password: password.trim(),
       );
+
       signUpProvider.setExceptionStatus(status: false);
     } on FirebaseAuthException catch (e) {
       if (context.mounted) {
@@ -52,6 +56,7 @@ class FirebaseHelper {
         ]);
       }
     }
+    debugPrint("return from firebase");
     return userCredential;
     // userId = userCredential.user!.uid;
   }
@@ -72,7 +77,7 @@ class FirebaseHelper {
       if (phone.length != 10) {
         throw FirebaseAuthException(code: "Enter 10-digits Phone number!");
       }
-      await FirebaseAuth.instance.verifyPhoneNumber(
+      await firebaseInstance.verifyPhoneNumber(
         phoneNumber: inputPhoneNumber,
         verificationCompleted: (phoneAuthCredential) {},
         verificationFailed: (error) {},
@@ -114,7 +119,7 @@ class FirebaseHelper {
     try {
       signInProvider.setExceptionOccuredStatus(status: true);
       signUpProvider.setExceptionStatus(status: true);
-      userCredential = await FirebaseAuth.instance.signInWithCredential(
+      userCredential = await firebaseInstance.signInWithCredential(
         credential,
       );
       signInProvider.setExceptionOccuredStatus(status: false);
@@ -146,7 +151,7 @@ class FirebaseHelper {
 
     try {
       signInProvider.setExceptionOccuredStatus(status: true);
-      userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      userCredential = await firebaseInstance.signInWithEmailAndPassword(
         email: email.trim(),
         password: password.trim(),
       );
@@ -185,5 +190,80 @@ class FirebaseHelper {
         .putFile(imageFile);
     TaskSnapshot uploadTaskSnapshot = await uploadTask;
     return await uploadTaskSnapshot.ref.getDownloadURL();
+  }
+ 
+  static Stream<QuerySnapshot<Map<String, dynamic>>>
+      fetchCollection({
+        required String collectionName
+      }){
+       return FirebaseFirestore.instance.collection(collectionName).snapshots();
+      }
+
+
+  static Stream<QuerySnapshot<Map<String, dynamic>>>
+      fetchDataStreamFromCollection({
+    required String collectionName,
+    required Object whereClauseField,
+    bool isTwoWhereClauses = false,
+    Object? isEqualTo,
+    Object? isNotEqualTo,
+    Object? isLessThan,
+    Object? isLessThanOrEqualTo,
+    Object? isGreaterThan,
+    Object? isGreaterThanOrEqualTo,
+    Object? arrayContains,
+    Iterable<Object?>? arrayContainsAny,
+    bool? isNull,
+    Object? whereClauseField2,
+    Object? isEqualTo2,
+    Object? isNotEqualTo2,
+    Object? isLessThan2,
+    Object? isLessThanOrEqualTo2,
+    Object? isGreaterThan2,
+    Object? isGreaterThanOrEqualTo2,
+    Object? arrayContains2,
+    bool? isNull2,
+  }) {
+    return (!isTwoWhereClauses)
+        ? FirebaseFirestore.instance
+            .collection(collectionName)
+            .where(
+              whereClauseField,
+              isEqualTo: isEqualTo,
+              isNotEqualTo: isNotEqualTo,
+              isLessThan: isLessThan,
+              isLessThanOrEqualTo: isLessThanOrEqualTo,
+              isGreaterThan: isGreaterThan,
+              isGreaterThanOrEqualTo: isGreaterThanOrEqualTo,
+              arrayContains: arrayContains,
+              isNull: isNull,
+              arrayContainsAny: arrayContainsAny,
+            )
+            .snapshots()
+        : FirebaseFirestore.instance
+            .collection(collectionName)
+            .where(
+              whereClauseField,
+              isEqualTo: isEqualTo,
+              isNotEqualTo: isNotEqualTo,
+              isLessThan: isLessThan,
+              isLessThanOrEqualTo: isLessThanOrEqualTo,
+              isGreaterThan: isGreaterThan,
+              isGreaterThanOrEqualTo: isGreaterThanOrEqualTo,
+              arrayContains: arrayContains,
+              isNull: isNull,
+            )
+            .where(
+              whereClauseField2!,
+              isEqualTo: isEqualTo2,
+              isNotEqualTo: isNotEqualTo2,
+              isLessThan: isLessThan2,
+              isLessThanOrEqualTo: isLessThanOrEqualTo2,
+              isGreaterThan: isGreaterThan2,
+              isGreaterThanOrEqualTo: isGreaterThanOrEqualTo2,
+              arrayContains: arrayContains2,
+              isNull: isNull2,
+            )
+            .snapshots();
   }
 }
