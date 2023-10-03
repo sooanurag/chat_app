@@ -1,4 +1,4 @@
-import 'package:chat_app/model/chatspace_model.dart';
+
 import 'package:chat_app/model/user_model.dart';
 import 'package:flutter/material.dart';
 

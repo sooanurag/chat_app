@@ -1,7 +1,6 @@
 import 'package:chat_app/model/chatspace_model.dart';
 import 'package:chat_app/utils/routes/route_names.dart';
 import 'package:chat_app/view_model/home/chatspace_provider.dart';
-import 'package:chat_app/view_model/home/home_provider.dart';
 import 'package:chat_app/view_model/home/search_provider.dart';
 import 'package:chat_app/view_model/theme/theme_manager.dart';
 import 'package:chat_app/view_model/user_provider.dart';
@@ -32,7 +31,6 @@ class _SearchRouteState extends State<SearchRoute> {
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
     final chatSpaceProvider = Provider.of<ChatSpaceProvider>(context);
-    final homeProvider = Provider.of<HomeProvider>(context);
     final searchProvider = Provider.of<SearchProvider>(context);
     final themeManager = Provider.of<ThemeManager>(context);
     return Scaffold(

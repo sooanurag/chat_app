@@ -1,6 +1,5 @@
 import 'package:chat_app/repository/firebase_repo/create_chatspace.dart';
 import 'package:chat_app/repository/firebase_repo/fetch_existing_chatspace.dart';
-import 'package:chat_app/utils/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 

@@ -14,6 +14,7 @@ var kDarkColorScheme = ColorScheme.fromSeed(
 ThemeData lightTheme = ThemeData().copyWith(
   useMaterial3: true,
   colorScheme: kColorScheme,
+  
 
 
 );

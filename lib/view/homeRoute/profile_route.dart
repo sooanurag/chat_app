@@ -1,4 +1,4 @@
-import 'package:chat_app/model/chatspace_model.dart';
+
 import 'package:chat_app/model/message_model.dart';
 import 'package:chat_app/view_model/home/chatspace_provider.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +28,7 @@ class _ProfileRouteState extends State<ProfileRoute> {
               MessageModel currentMessage = value.messageStatesList[index];
               return ListTile(
                 title: Text(currentMessage.text ?? "null"),
-                leading: CircleAvatar(),
+                leading: const CircleAvatar(),
                 subtitle: Text(currentMessage.isSelected.toString()),
                 trailing: IconButton(
                     onPressed: () {

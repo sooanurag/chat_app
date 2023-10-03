@@ -3,14 +3,12 @@ import 'dart:io';
 import 'package:chat_app/model/user_model.dart';
 import 'package:chat_app/view_model/auth/signin_provider.dart';
 import 'package:chat_app/view_model/auth/signup_provider.dart';
-import 'package:chat_app/view_model/home/chatspace_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:provider/provider.dart';
 
-import '../model/message_model.dart';
 import '../utils/utils.dart';
 
 class FirebaseHelper {

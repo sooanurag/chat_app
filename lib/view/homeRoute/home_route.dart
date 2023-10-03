@@ -126,6 +126,8 @@ class _HomeRouteState extends State<HomeRoute> {
                                               chatSpaceId: chatSpaceProvider
                                                   .chatSpaceData.chatSpaceId!,
                                             );
+                                            chatSpaceProvider
+                                                .removeAllSelectedMessages();
                                             // push to route
                                             Navigator.pushNamed(
                                                 context, RouteName.chatspace);
