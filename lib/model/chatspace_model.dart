@@ -1,25 +1,25 @@
 class ChatSpaceModel {
-  String? chatroomId;
+  String? chatSpaceId;
   Map<String, dynamic>? participants;
   String? lastMessage;
   DateTime? lastMessageTimeStamp;
 
   ChatSpaceModel(
-      {this.chatroomId,
+      {this.chatSpaceId,
       this.participants,
       this.lastMessage,
       this.lastMessageTimeStamp});
 
   ChatSpaceModel.fromMap(Map<String, dynamic> map) {
-    chatroomId = map["chatroomId"];
+    chatSpaceId = map["chatSpaceId"];
     participants = map["participants"];
     lastMessage = map["lastMessage"];
-    lastMessageTimeStamp = map["lastMessageTimeStamp"].toDate();
+    lastMessageTimeStamp = map["lastMessageTimeStamp"]?.toDate();
   }
 
   Map<String, dynamic> toMap() {
     return {
-      "chatroomId": chatroomId,
+      "chatSpaceId": chatSpaceId,
       "participants": participants,
       "lastMessage": lastMessage,
       "lastMessageTimeStamp":lastMessageTimeStamp,

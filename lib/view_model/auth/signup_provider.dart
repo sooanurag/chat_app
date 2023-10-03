@@ -199,8 +199,9 @@ class SignUpProvider with ChangeNotifier {
           context: context,
         );
       }
+      if(!signUpProvider.isExceptionOccured){
       signUpProvider.setPhoneStatus(false);
-      signUpProvider.setButtonValue(buttonTitle: "Verify");
+      signUpProvider.setButtonValue(buttonTitle: "Verify");}
     }
   }
 

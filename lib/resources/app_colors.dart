@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  static const List<Color> defaultGreenYellow = [
-    Color.fromRGBO(0, 85, 85, 1.0),
-    Color.fromRGBO(6, 154, 142, 1.0),
-    Color.fromRGBO(161, 227, 216, 1.0),
-    Color.fromRGBO(247, 255, 147, 1.0),
+  static Color selection = Colors.lightBlue.withOpacity(0.4);
+
+  static List<Color> defaultGreenYellow = [
+    const Color.fromRGBO(0, 85, 85, 1.0),
+    const Color.fromRGBO(6, 154, 142, 0.8),
+    const Color.fromRGBO(161, 227, 216, 1.0),
+    Colors.grey.withOpacity(0.4),
   ];
 
   static const List<Color> pastelBlueYellow = [

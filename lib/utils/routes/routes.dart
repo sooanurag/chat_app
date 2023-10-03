@@ -28,7 +28,7 @@ class Routes {
         return MaterialPageRoute(builder: (context) => const ProfileRoute());
       case RouteName.search:
         return MaterialPageRoute(builder: (context) => const SearchRoute());
-      case RouteName.chats:
+      case RouteName.chatspace:
         return MaterialPageRoute(builder: (context) => const ChatSpaceRoute());
       default:
         return MaterialPageRoute(

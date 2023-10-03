@@ -100,15 +100,17 @@ class SignInProvider with ChangeNotifier {
       );
       if (!signInProvider.isExceptionOccured) {
         debugPrint("sign In success");
-        if(context.mounted){
-        Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.pushReplacementNamed(context, RouteName.home);}
+        if (context.mounted) {
+          Navigator.popUntil(context, (route) => route.isFirst);
+          Navigator.pushReplacementNamed(context, RouteName.home);
+        }
       }
     } else if (buttonValue.value == "Send OTP") {
       await signInProvider.verifyPhone(
         phone: phoneController.text,
         context: context,
       );
+      debugPrint(signInProvider.isExceptionOccured.toString());
       if (!signInProvider.isExceptionOccured) {
         isSendOTP.value = true;
         buttonValue.value = "Verify OTP";
@@ -120,9 +122,10 @@ class SignInProvider with ChangeNotifier {
       );
       if (!signInProvider.isExceptionOccured) {
         debugPrint("signed-In with Phone");
-        if(context.mounted){
-        Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.pushReplacementNamed(context, RouteName.home);}
+        if (context.mounted) {
+          Navigator.popUntil(context, (route) => route.isFirst);
+          Navigator.pushReplacementNamed(context, RouteName.home);
+        }
       }
     }
   }

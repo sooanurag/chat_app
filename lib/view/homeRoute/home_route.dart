@@ -3,13 +3,16 @@ import 'package:chat_app/model/user_model.dart';
 import 'package:chat_app/resources/app_colors.dart';
 import 'package:chat_app/services/firebase_helper.dart';
 import 'package:chat_app/utils/routes/route_names.dart';
+import 'package:chat_app/view_model/home/chatspace_provider.dart';
 import 'package:chat_app/view_model/home/home_provider.dart';
 import 'package:chat_app/view_model/home/search_provider.dart';
+import 'package:chat_app/view_model/home/stream_provider.dart';
 import 'package:chat_app/view_model/theme/theme_manager.dart';
 import 'package:chat_app/view_model/user_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 class HomeRoute extends StatefulWidget {
   const HomeRoute({super.key});
@@ -24,42 +27,53 @@ class _HomeRouteState extends State<HomeRoute> {
     final themeManager = Provider.of<ThemeManager>(context);
     final homeProvider = Provider.of<HomeProvider>(context);
     final userProvider = Provider.of<UserProvider>(context);
+    final chatSpaceProvider = Provider.of<ChatSpaceProvider>(context);
+    final messageStreamProvider = Provider.of<MessageStreamProvider>(context);
     return Scaffold(
       backgroundColor: themeManager.primary,
       body: SafeArea(
         bottom: false,
         child: Column(
           children: [
-            Expanded(
-                child: Container(
-              padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+            Container(
+              padding: const EdgeInsets.symmetric(
+                vertical: 10,
+                horizontal: 10,
+              ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Text(
-                    "Messages.",
+                  Text(
+                    "Messages",
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: themeManager.onprimaryLight,
                         fontSize: 28),
                   ),
                   const Spacer(),
                   InkWell(
                     onTap: () {
+                      // userProvider.setTargetUserData(
+                      //                           targetUserData: targetUser);
+                      //                       chatSpaceProvider.setChatSpaceData(
+                      //                           chatSpaceData: chatSpaceData);
                       Navigator.pushNamed(context, RouteName.profile);
                     },
-                    child: const CircleAvatar(
+                    child: CircleAvatar(
                       radius: 20,
+                      backgroundColor: themeManager.onprimary,
+                      backgroundImage: (userProvider.userData.profilePicture !=
+                              null)
+                          ? NetworkImage(userProvider.userData.profilePicture!)
+                          : null,
                     ),
                   ),
                 ],
               ),
-            )),
+            ),
             Expanded(
                 flex: 12,
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                   decoration: BoxDecoration(
                       color: themeManager.onprimaryLight,
                       borderRadius: const BorderRadius.only(
@@ -80,6 +94,9 @@ class _HomeRouteState extends State<HomeRoute> {
                                     ChatSpaceModel.fromMap(
                                         querySnapshot.docs[index].data()
                                             as Map<String, dynamic>);
+                                debugPrint(chatSpaceData.toMap().toString());
+                                debugPrint(
+                                    chatSpaceData.participants.toString());
                                 String targetUserId =
                                     homeProvider.fetchTargetUserIdFromChatSpace(
                                         chatSpaceData: chatSpaceData,
@@ -95,9 +112,27 @@ class _HomeRouteState extends State<HomeRoute> {
                                             snapshot.data as UserModel;
 
                                         return ListTile(
-                                          onTap: () {},
+                                          onTap: () {
+                                            // set TargetUser
+                                            userProvider.setTargetUserData(
+                                                targetUserData: targetUser);
+                                            // set chatSpace data
+                                            chatSpaceProvider.setChatSpaceData(
+                                                chatSpaceData: chatSpaceData);
+                                            // init stream
+                                            messageStreamProvider
+                                                .initStreamAndStore(
+                                              context: context,
+                                              chatSpaceId: chatSpaceProvider
+                                                  .chatSpaceData.chatSpaceId!,
+                                            );
+                                            // push to route
+                                            Navigator.pushNamed(
+                                                context, RouteName.chatspace);
+                                          },
                                           leading: CircleAvatar(
-                                            backgroundColor: Colors.grey,
+                                            backgroundColor:
+                                                themeManager.onprimary,
                                             backgroundImage: (targetUser
                                                     .profilePicture!.isNotEmpty)
                                                 ? NetworkImage(
@@ -109,11 +144,29 @@ class _HomeRouteState extends State<HomeRoute> {
                                             chatSpaceData.lastMessage!,
                                             maxLines: 1,
                                           ),
+                                          trailing: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              // is pinned
+                                              // is pinned
+                                              if (chatSpaceData
+                                                      .lastMessageTimeStamp !=
+                                                  null)
+                                                Text(
+                                                  DateFormat("H:mm - EEE")
+                                                      .format(chatSpaceData
+                                                          .lastMessageTimeStamp!),
+                                                  style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 10),
+                                                ),
+                                            ],
+                                          ),
                                         );
                                       } else {
-                                        return const Center(
-                                          child: Text("something went wrong!"),
-                                        );
+                                        return Container();
                                       }
                                     });
                               });
@@ -127,8 +180,10 @@ class _HomeRouteState extends State<HomeRoute> {
                           );
                         }
                       } else {
-                        return const Center(
-                          child: Text("No Internet"),
+                        return Center(
+                          child: CircularProgressIndicator(
+                            color: themeManager.primary,
+                          ),
                         );
                       }
                     },

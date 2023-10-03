@@ -13,7 +13,9 @@ class ThemeManager with ChangeNotifier {
   Color _onPrimary = AppColors.defaultGreenYellow[1];
   Color _onPrimaryLight = AppColors.defaultGreenYellow[2];
   Color _primaryNegative = AppColors.defaultGreenYellow[3];
+  final Color _selectionColor = AppColors.selection;
 
+  get selectionColor => _selectionColor;
   get primary => _primary;
   get onprimary => _onPrimary;
   get onprimaryLight => _onPrimaryLight;

@@ -5,6 +5,6 @@ class RouteName {
   static const String authSignUp = "signUp_route";
   static const String home = "home_route";
   static const String profile = "profile_route";
-  static const String chats = "chats_route";
+  static const String chatspace = "chatspace_route";
   static const String search = "search_route";
 }

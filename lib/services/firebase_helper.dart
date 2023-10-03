@@ -3,12 +3,14 @@ import 'dart:io';
 import 'package:chat_app/model/user_model.dart';
 import 'package:chat_app/view_model/auth/signin_provider.dart';
 import 'package:chat_app/view_model/auth/signup_provider.dart';
+import 'package:chat_app/view_model/home/chatspace_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:provider/provider.dart';
 
+import '../model/message_model.dart';
 import '../utils/utils.dart';
 
 class FirebaseHelper {
@@ -35,8 +37,7 @@ class FirebaseHelper {
     signUpProvider.setExceptionStatus(status: true);
     try {
       debugPrint("inside try");
-      userCredential =
-          await firebaseInstance.createUserWithEmailAndPassword(
+      userCredential = await firebaseInstance.createUserWithEmailAndPassword(
         email: email.trim(),
         password: password.trim(),
       );
@@ -72,9 +73,10 @@ class FirebaseHelper {
     final signInProvider = Provider.of<SignInProvider>(context, listen: false);
 
     try {
-      signInProvider.setExceptionOccuredStatus(status: true);
-      signUpProvider.setExceptionStatus(status: true);
+      
       if (phone.length != 10) {
+        signInProvider.setExceptionOccuredStatus(status: true);
+      signUpProvider.setExceptionStatus(status: true);
         throw FirebaseAuthException(code: "Enter 10-digits Phone number!");
       }
       await firebaseInstance.verifyPhoneNumber(
@@ -89,6 +91,7 @@ class FirebaseHelper {
       );
       signInProvider.setExceptionOccuredStatus(status: false);
       signUpProvider.setExceptionStatus(status: false);
+      debugPrint("${signInProvider.isExceptionOccured}insidehelper");
     } on FirebaseAuthException catch (e) {
       if (context.mounted) {
         signUpProvider.setExceptionStatus(status: true);
@@ -97,6 +100,7 @@ class FirebaseHelper {
             onPressed: () {
               Navigator.of(context).pop();
               signUpProvider.setExceptionStatus(status: false);
+              signInProvider.setExceptionOccuredStatus(status: false);
             },
             child: const Text("close"),
           ),
@@ -191,14 +195,11 @@ class FirebaseHelper {
     TaskSnapshot uploadTaskSnapshot = await uploadTask;
     return await uploadTaskSnapshot.ref.getDownloadURL();
   }
- 
-  static Stream<QuerySnapshot<Map<String, dynamic>>>
-      fetchCollection({
-        required String collectionName
-      }){
-       return FirebaseFirestore.instance.collection(collectionName).snapshots();
-      }
 
+  static Stream<QuerySnapshot<Map<String, dynamic>>> fetchCollection(
+      {required String collectionName}) {
+    return FirebaseFirestore.instance.collection(collectionName).snapshots();
+  }
 
   static Stream<QuerySnapshot<Map<String, dynamic>>>
       fetchDataStreamFromCollection({
@@ -266,4 +267,16 @@ class FirebaseHelper {
             )
             .snapshots();
   }
+
+  static Stream<QuerySnapshot<Map<String, dynamic>>> fetchMessages({
+    required String chatSpaceId,
+  }){
+    return FirebaseFirestore.instance
+                  .collection("chatspace")
+                  .doc(chatSpaceId)
+                  .collection("messages")
+                  .orderBy("createdOn", descending: true)
+                  .snapshots();
+  }
+  
 }

@@ -1,14 +1,17 @@
 import 'dart:io';
 
-import 'package:chat_app/resources/app_colors.dart';
+
 import 'package:chat_app/resources/app_paths.dart';
-import 'package:chat_app/view_model/theme/theme_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lottie/lottie.dart';
-import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
+
 
 class Utils {
+
+static const uuid = Uuid();
+
   static const divider = SizedBox(
     height: 20,
   );

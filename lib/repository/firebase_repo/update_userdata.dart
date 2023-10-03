@@ -36,7 +36,7 @@ getList({
 }) {
   List<String> list = [];
   String val = "";
-  for (int i = 0; i < fullName!.length / 2; i++) {
+  for (int i = 0; i < fullName.length / 2; i++) {
     list.add(fullName[i]);
     val = val + fullName[i];
     list.add(val);

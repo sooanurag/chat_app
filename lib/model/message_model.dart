@@ -2,30 +2,30 @@ class MessageModel {
   String? messageId;
   String? senderId;
   String? text;
-  bool? seen;
+  bool seen = false;
   DateTime? createdOn;
-  bool? isReply;
-  bool? isForwarded;
-  bool? isSelected;
-  bool? isStar;
+  bool isReply = false;
+  bool isForwarded = false;
+  bool isSelected = false;
+  bool isStar = false;
 
   MessageModel({
     this.senderId,
     this.text,
-    this.seen,
+    this.seen = false,
     this.createdOn,
     this.messageId,
-    this.isReply,
-    this.isForwarded,
-    this.isSelected,
-    this.isStar,
+    this.isReply = false,
+    this.isForwarded = false,
+    this.isSelected = false,
+    this.isStar = false,
   });
 
   MessageModel.fromMap(Map<String, dynamic> map) {
     senderId = map["senderId"];
     messageId = map["messageId"];
     text = map["text"];
-    seen = map["seen"];
+    seen = map["seen"] ;
     createdOn = map["createdOn"].toDate();
     isReply = map["isReply"];
     isForwarded = map["isForwarded"];
@@ -39,9 +39,9 @@ class MessageModel {
       "text": text,
       "seen": seen,
       "createdOn": createdOn,
-      "isReply":isReply,
-      "isForwarded":isForwarded,
-      "isStar":isStar,
+      "isReply": isReply,
+      "isForwarded": isForwarded,
+      "isStar": isStar,
     };
   }
 }
