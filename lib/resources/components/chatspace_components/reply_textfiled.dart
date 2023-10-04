@@ -1,8 +1,24 @@
+import 'package:chat_app/model/message_model.dart';
+import 'package:chat_app/view_model/home/chatspace_provider.dart';
+import 'package:chat_app/view_model/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 replyTextField({
+  required TextEditingController messageController,
+  required BuildContext context,
   required themeManager,
+  required MessageModel replyMessageData,
 }) {
+  final userProvider = Provider.of<UserProvider>(context, listen: false);
+  final chatSpaceProvider =
+      Provider.of<ChatSpaceProvider>(context, listen: false);
+  String replyOnName =
+      (replyMessageData.senderId == userProvider.userData.userId!)
+          ? "You"
+          : userProvider.targetuserData.fullName!;
+  // chatSpaceProvider.setReplidToName(name: replyOnName);
+
   return Container(
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(20),
@@ -21,21 +37,35 @@ replyTextField({
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Column(
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "user :",
+                      "$replyOnName :",
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w500, color: Colors.white),
                     ),
-                    Text("reply On Text"),
+                    const SizedBox(
+                      height: 2,
+                    ),
+                    Text(
+                      replyMessageData.text!,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.w300),
+                    ),
                   ],
                 ),
                 const Spacer(),
                 IconButton(
                     padding: EdgeInsets.zero,
-                    onPressed: () {},
+                    onPressed: () {
+                      chatSpaceProvider.setIsReplyMessageStatus(status: false);
+                    },
                     icon: const Icon(
                       Icons.close,
+                      color: Colors.white,
                     ))
               ],
             ),
@@ -51,7 +81,8 @@ replyTextField({
                 )),
             Expanded(
                 child: TextField(
-                  style: TextStyle(color: themeManager.onprimaryLight),
+              controller: messageController,
+              style: TextStyle(color: themeManager.onprimaryLight),
               cursorColor: themeManager.onprimary,
               decoration: InputDecoration(
                   border: InputBorder.none,

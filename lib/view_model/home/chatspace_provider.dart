@@ -60,10 +60,24 @@ class ChatSpaceProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  bool _isReplyMessage = true;
+  bool _isReplyMessage = false;
   bool get isReplyMessage => _isReplyMessage;
   void setIsReplyMessageStatus({required bool status}) {
     _isReplyMessage = status;
+    notifyListeners();
+  }
+
+  // String _repliedToName = "";
+  // String get repliedToName => _repliedToName;
+  // void setReplidToName({required String name}) {
+  //   _repliedToName = name;
+  //   notifyListeners();
+  // }
+
+  MessageModel _replyMessageData = MessageModel();
+  MessageModel get getReplyMessageData => _replyMessageData;
+  void setReplyMessageData({required MessageModel replyMessage}) {
+    _replyMessageData = replyMessage;
     notifyListeners();
   }
 
@@ -137,8 +151,8 @@ class ChatSpaceProvider with ChangeNotifier {
   // }
 
   Stream<QuerySnapshot<Map<String, dynamic>>> fetchMessagesStream(
-      {required String chatSpaceId, required BuildContext context})  {
-    return  FirebaseHelper.fetchMessages(
+      {required String chatSpaceId, required BuildContext context}) {
+    return FirebaseHelper.fetchMessages(
       chatSpaceId: chatSpaceId,
       context: context,
     );
@@ -148,11 +162,13 @@ class ChatSpaceProvider with ChangeNotifier {
     required MessageModel messageData,
     required String userId,
     bool? deleteForMe,
+    bool? isReply,
   }) async {
     if (deleteForMe != null) {
       deleteForMe = !deleteForMe;
     }
     messageData.deleteForMeCheck?[userId] = deleteForMe ?? true;
+    messageData.isReply = isReply ?? messageData.isReply;
 
     await FirebaseFirestore.instance
         .collection("chatspace")
@@ -181,6 +197,7 @@ class ChatSpaceProvider with ChangeNotifier {
     required String targetUserId,
     required ChatSpaceModel chatSpaceData,
     required BuildContext context,
+    bool? isReplied,
   }) async {
     String inputMessage = messageController.text.trim();
 
@@ -194,6 +211,7 @@ class ChatSpaceProvider with ChangeNotifier {
           userId: true,
           targetUserId: true,
         },
+        isReply: isReplied ?? false,
       );
       await FirebaseFirestore.instance
           .collection("chatspace")

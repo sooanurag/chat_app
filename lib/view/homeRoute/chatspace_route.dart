@@ -1,3 +1,4 @@
+import 'package:chat_app/resources/components/chatspace_components/reply_container.dart';
 import 'package:chat_app/resources/components/chatspace_components/reply_textfiled.dart';
 import 'package:chat_app/utils/utils.dart';
 import 'package:chat_app/view_model/home/chatspace_provider.dart';
@@ -115,7 +116,7 @@ class _ChatSpaceRouteState extends State<ChatSpaceRoute> {
                               PopupMenuItem(
                                 child: const Text("Report"),
                                 onTap: () {
-                                  Utils.snackBar("Not available",context);
+                                  Utils.snackBar("Not available", context);
                                 },
                               ),
                               PopupMenuItem(
@@ -135,7 +136,13 @@ class _ChatSpaceRouteState extends State<ChatSpaceRoute> {
                                     children: [
                                       IconButton(
                                           padding: EdgeInsets.zero,
-                                          onPressed: () {},
+                                          onPressed: () {
+                                            value.setIsReplyMessageStatus(
+                                                status: true);
+                                            value.setReplyMessageData(
+                                                replyMessage: value
+                                                    .getSelectedMessages[0]);
+                                          },
                                           icon: Icon(
                                             Icons.reply,
                                             color: themeManager.onprimaryLight,
@@ -463,10 +470,41 @@ class _ChatSpaceRouteState extends State<ChatSpaceRoute> {
                                                 child: Padding(
                                                   padding:
                                                       const EdgeInsets.all(8.0),
-                                                  child: Text(
-                                                    currentMessage.text!,
-                                                    style: const TextStyle(
-                                                        fontSize: 18),
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      if (currentMessage
+                                                          .isReply)
+                                                        replyContainer(
+                                                          senderId:
+                                                              currentMessage
+                                                                  .senderId!,
+                                                          userId: userProvider
+                                                              .userData.userId!,
+                                                          themeManager:
+                                                              themeManager,
+                                                          replyOnName: (currentMessage
+                                                                      .senderId ==
+                                                                  userProvider
+                                                                      .userData
+                                                                      .userId!)
+                                                              ? "You"
+                                                              : userProvider
+                                                                  .targetuserData
+                                                                  .fullName!,
+                                                          replyMessageData:
+                                                              currentMessage,
+                                                          chatSpaceProvider:
+                                                              chatSpaceProvider,
+                                                        ),
+                                                      Text(
+                                                        currentMessage.text!,
+                                                        style: const TextStyle(
+                                                            fontSize: 18),
+                                                      ),
+                                                    ],
                                                   ),
                                                 )),
                                           ],
@@ -487,6 +525,13 @@ class _ChatSpaceRouteState extends State<ChatSpaceRoute> {
                                           DateFormat("H:mm d/M/yy").format(
                                               currentMessage.createdOn!),
                                           style: const TextStyle(fontSize: 8),
+                                        ),
+                                        const SizedBox(
+                                          width: 2,
+                                        ),
+                                        const Icon(
+                                          Icons.done,
+                                          size: 14,
                                         ),
                                       ],
                                     ),
@@ -510,7 +555,7 @@ class _ChatSpaceRouteState extends State<ChatSpaceRoute> {
                         child: Row(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              (chatSpaceProvider.isReplyMessage)
+                              (!chatSpaceProvider.isReplyMessage)
                                   ? Expanded(
                                       child: Container(
                                       decoration: BoxDecoration(
@@ -564,6 +609,10 @@ class _ChatSpaceRouteState extends State<ChatSpaceRoute> {
                                     ))
                                   : Expanded(
                                       child: replyTextField(
+                                          messageController: _messageController,
+                                          replyMessageData: chatSpaceProvider
+                                              .getReplyMessageData,
+                                          context: context,
                                           themeManager: themeManager)),
                               const SizedBox(
                                 width: 5,
@@ -585,7 +634,13 @@ class _ChatSpaceRouteState extends State<ChatSpaceRoute> {
                                       chatSpaceData:
                                           chatSpaceProvider.chatSpaceData,
                                       context: context,
+                                      isReplied:
+                                          chatSpaceProvider.isReplyMessage,
                                     );
+                                    chatSpaceProvider.setIsReplyMessageStatus(
+                                        status: false);
+                                    chatSpaceProvider
+                                        .removeAllSelectedMessages();
                                   },
                                 ),
                               ),

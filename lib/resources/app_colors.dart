@@ -8,6 +8,7 @@ class AppColors {
     const Color.fromRGBO(6, 154, 142, 0.8),
     const Color.fromRGBO(161, 227, 216, 1.0),
     Colors.grey.withOpacity(0.4),
+    const Color.fromARGB(255, 77, 76, 76),
   ];
 
   static const List<Color> pastelBlueYellow = [
