@@ -1,3 +1,4 @@
+import 'package:chat_app/resources/components/chatspace_components/forward_bottomsheet.dart';
 import 'package:chat_app/resources/components/chatspace_components/reply_container.dart';
 import 'package:chat_app/resources/components/chatspace_components/reply_textfiled.dart';
 import 'package:chat_app/utils/utils.dart';
@@ -149,11 +150,15 @@ class _ChatSpaceRouteState extends State<ChatSpaceRoute> {
                                           )),
                                       IconButton(
                                           padding: EdgeInsets.zero,
-                                          onPressed: () {},
-                                          icon: Icon(
-                                            Icons.forward,
+                                          onPressed: () {
+                                            forwardBottomSheet(
+                                                context: context);
+                                          },
+                                          icon: Utils.trasform(
+                                              icon: Icon(
+                                            Icons.reply,
                                             color: themeManager.onprimaryLight,
-                                          )),
+                                          ))),
                                       PopupMenuButton(
                                         color: themeManager.onprimaryLight,
                                         itemBuilder: (context) => [
@@ -297,11 +302,15 @@ class _ChatSpaceRouteState extends State<ChatSpaceRoute> {
                                     children: [
                                       IconButton(
                                           padding: EdgeInsets.zero,
-                                          onPressed: () {},
-                                          icon: Icon(
-                                            Icons.forward,
+                                          onPressed: () {
+                                            forwardBottomSheet(
+                                                context: context);
+                                          },
+                                          icon: Utils.trasform(
+                                              icon: Icon(
+                                            Icons.reply,
                                             color: themeManager.onprimaryLight,
-                                          )),
+                                          ))),
                                       IconButton(
                                           padding: EdgeInsets.zero,
                                           onPressed: () async {
@@ -475,6 +484,28 @@ class _ChatSpaceRouteState extends State<ChatSpaceRoute> {
                                                         CrossAxisAlignment
                                                             .start,
                                                     children: [
+                                                      if (currentMessage
+                                                          .isForwarded)
+                                                        Row(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Utils.trasform(
+                                                                icon:
+                                                                    const Icon(
+                                                              Icons.reply,
+                                                              size: 18,
+                                                            )),
+                                                            const Text(
+                                                              "Forwarded",
+                                                              style: TextStyle(
+                                                                  fontSize: 12),
+                                                            ),
+                                                          ],
+                                                        ),
                                                       if (currentMessage
                                                           .isReply)
                                                         replyContainer(

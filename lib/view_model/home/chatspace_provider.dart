@@ -191,6 +191,44 @@ class ChatSpaceProvider with ChangeNotifier {
         .delete();
   }
 
+  Future<void> forwarMessages({
+    required ChatSpaceModel chatSpaceData,
+    required List<MessageModel> forwardMessages,
+    required String userId,
+    required String targetUserId,
+  }) async {
+    String lastMessage = "";
+    for (MessageModel forwardedMessageData in forwardMessages) {
+      forwardedMessageData.createdOn = DateTime.now();
+      forwardedMessageData.messageId = Utils.uuid.v1();
+      forwardedMessageData.senderId = userId;
+      forwardedMessageData.deleteForMeCheck = {
+        userId: true,
+        targetUserId: true,
+      };
+      forwardedMessageData.isReply = false;
+      forwardedMessageData.isForwarded = true;
+
+      lastMessage = forwardedMessageData.text!;
+
+      await FirebaseFirestore.instance
+          .collection("chatspace")
+          .doc(chatSpaceData.chatSpaceId)
+          .collection("messages")
+          .doc(forwardedMessageData.messageId)
+          .set(
+            forwardedMessageData.toMap(),
+          );
+    }
+    chatSpaceData.lastMessage = lastMessage;
+    chatSpaceData.lastMessageTimeStamp = DateTime.now();
+
+    FirebaseFirestore.instance
+          .collection("chatspace")
+          .doc(chatSpaceData.chatSpaceId)
+          .set(chatSpaceData.toMap());
+  }
+
   Future<void> sendMessage({
     required messageController,
     required String userId,

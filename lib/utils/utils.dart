@@ -22,6 +22,16 @@ class Utils {
     );
   }
 
+  static trasform({
+    required Icon icon,
+  }){
+    return Transform(
+      alignment: Alignment.center,
+      transform: Matrix4.rotationY(3.1415926535897932), // Flip horizontally
+      child: icon,
+    );
+  }
+
   static showToastMessage(String message) {
     Fluttertoast.showToast(msg: message);
   }
