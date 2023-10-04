@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:chat_app/model/user_model.dart';
 import 'package:chat_app/view_model/auth/signin_provider.dart';
 import 'package:chat_app/view_model/auth/signup_provider.dart';
+import 'package:chat_app/view_model/home/stream_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -71,10 +72,9 @@ class FirebaseHelper {
     final signInProvider = Provider.of<SignInProvider>(context, listen: false);
 
     try {
-      
       if (phone.length != 10) {
         signInProvider.setExceptionOccuredStatus(status: true);
-      signUpProvider.setExceptionStatus(status: true);
+        signUpProvider.setExceptionStatus(status: true);
         throw FirebaseAuthException(code: "Enter 10-digits Phone number!");
       }
       await firebaseInstance.verifyPhoneNumber(
@@ -268,13 +268,22 @@ class FirebaseHelper {
 
   static Stream<QuerySnapshot<Map<String, dynamic>>> fetchMessages({
     required String chatSpaceId,
-  }){
-    return FirebaseFirestore.instance
-                  .collection("chatspace")
-                  .doc(chatSpaceId)
-                  .collection("messages")
-                  .orderBy("createdOn", descending: true)
-                  .snapshots();
+    required BuildContext context,
+  }) async* {
+    final msgStreamProvider =
+        Provider.of<MessageStreamProvider>(context, listen: false);
+    final Stream<QuerySnapshot<Map<String, dynamic>>> messageStream =
+        FirebaseFirestore.instance
+            .collection("chatspace")
+            .doc(chatSpaceId)
+            .collection("messages")
+            .orderBy("createdOn", descending: true)
+            .snapshots();
+    await for (QuerySnapshot<Map<String, dynamic>> snapshot in messageStream) {
+      if (msgStreamProvider.isHold) {
+        await Future.delayed(const Duration(seconds: 2));
+      }
+      yield snapshot;
+    }
   }
-  
 }

@@ -78,15 +78,38 @@ class ChatSpaceProvider with ChangeNotifier {
   List<MessageModel> get getSelectedMessages => _selectedMessages;
   void removeAllSelectedMessages() {
     _selectedMessages = [];
+    notifyListeners();
   }
+
   void addSelectedMessages({required MessageModel selectedMessage}) {
     _selectedMessages.add(selectedMessage);
+    notifyListeners();
+  }
+
+  void addAllSelectedMessages({required List<MessageModel> allMessages}) {
+    _selectedMessages.addAll(allMessages);
     notifyListeners();
   }
 
   void removeDeselectedMessages({required MessageModel deselectedMessage}) {
     _selectedMessages.remove(deselectedMessage);
     notifyListeners();
+  }
+
+  void deSelectMessages({
+    required int slectedMessagesLength,
+    required ChatSpaceProvider value,
+  }) {
+    for (int i = 0; i < slectedMessagesLength; i++) {
+      // debugPrint("index : $i");
+      value.updateMessageState(
+        messageData: value.getSelectedMessages[0],
+        index: i,
+        helperProvider: value,
+        isMessageSelected: false,
+      );
+      debugPrint(value.getSelectedMessages.length.toString());
+    }
   }
 
   // bool _isMessageSelected = false;
@@ -113,15 +136,49 @@ class ChatSpaceProvider with ChangeNotifier {
   //   return messageData;
   // }
 
-  Stream<QuerySnapshot<Map<String, dynamic>>> fetchMessagesStream({
-    required String chatSpaceId,
-  }) {
-    return FirebaseHelper.fetchMessages(chatSpaceId: chatSpaceId);
+  Stream<QuerySnapshot<Map<String, dynamic>>> fetchMessagesStream(
+      {required String chatSpaceId, required BuildContext context})  {
+    return  FirebaseHelper.fetchMessages(
+      chatSpaceId: chatSpaceId,
+      context: context,
+    );
+  }
+
+  Future<void> updateMessageDataOnFirestore({
+    required MessageModel messageData,
+    required String userId,
+    bool? deleteForMe,
+  }) async {
+    if (deleteForMe != null) {
+      deleteForMe = !deleteForMe;
+    }
+    messageData.deleteForMeCheck?[userId] = deleteForMe ?? true;
+
+    await FirebaseFirestore.instance
+        .collection("chatspace")
+        .doc(chatSpaceData.chatSpaceId)
+        .collection("messages")
+        .doc(messageData.messageId)
+        .set(
+          messageData.toMap(),
+        );
+  }
+
+  Future<void> deleteDataFromFireStore({
+    required MessageModel messageData,
+  }) async {
+    await FirebaseFirestore.instance
+        .collection("chatspace")
+        .doc(chatSpaceData.chatSpaceId)
+        .collection("messages")
+        .doc(messageData.messageId)
+        .delete();
   }
 
   Future<void> sendMessage({
     required messageController,
-    required String senderId,
+    required String userId,
+    required String targetUserId,
     required ChatSpaceModel chatSpaceData,
     required BuildContext context,
   }) async {
@@ -130,9 +187,13 @@ class ChatSpaceProvider with ChangeNotifier {
     if (inputMessage.isNotEmpty) {
       MessageModel newMessage = MessageModel(
         messageId: Utils.uuid.v1(),
-        senderId: senderId,
+        senderId: userId,
         text: inputMessage,
         createdOn: DateTime.now(),
+        deleteForMeCheck: {
+          userId: true,
+          targetUserId: true,
+        },
       );
       await FirebaseFirestore.instance
           .collection("chatspace")

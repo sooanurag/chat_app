@@ -2,6 +2,7 @@ import 'package:chat_app/model/chatspace_model.dart';
 import 'package:chat_app/utils/routes/route_names.dart';
 import 'package:chat_app/view_model/home/chatspace_provider.dart';
 import 'package:chat_app/view_model/home/search_provider.dart';
+import 'package:chat_app/view_model/home/stream_provider.dart';
 import 'package:chat_app/view_model/theme/theme_manager.dart';
 import 'package:chat_app/view_model/user_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -33,6 +34,7 @@ class _SearchRouteState extends State<SearchRoute> {
     final chatSpaceProvider = Provider.of<ChatSpaceProvider>(context);
     final searchProvider = Provider.of<SearchProvider>(context);
     final themeManager = Provider.of<ThemeManager>(context);
+    final messageStreamProvider = Provider.of<MessageStreamProvider>(context);
     return Scaffold(
       backgroundColor: themeManager.primary,
       body: SafeArea(
@@ -149,7 +151,18 @@ class _SearchRouteState extends State<SearchRoute> {
                                                 chatSpaceData: chatSpaceData);
                                             userProvider.setTargetUserData(
                                                 targetUserData: targetUserData);
+                                            //akjfna
+                                            
                                             if (mounted) {
+                                              messageStreamProvider
+                                                .initStreamAndStore(
+                                                  userId: userProvider.userData.userId!,
+                                              context: context,
+                                              chatSpaceId: chatSpaceProvider
+                                                  .chatSpaceData.chatSpaceId!,
+                                            );
+                                            chatSpaceProvider
+                                                .removeAllSelectedMessages();
                                               Navigator.pushNamed(
                                                   context, RouteName.chatspace);
                                             }
@@ -246,6 +259,15 @@ class _SearchRouteState extends State<SearchRoute> {
                                           userProvider.setTargetUserData(
                                               targetUserData: targetUserData);
                                           if (mounted) {
+                                            messageStreamProvider
+                                                .initStreamAndStore(
+                                                  userId: userProvider.userData.userId!,
+                                              context: context,
+                                              chatSpaceId: chatSpaceProvider
+                                                  .chatSpaceData.chatSpaceId!,
+                                            );
+                                            chatSpaceProvider
+                                                .removeAllSelectedMessages();
                                             Navigator.pushNamed(
                                                 context, RouteName.chatspace);
                                           }

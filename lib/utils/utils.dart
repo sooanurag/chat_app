@@ -1,20 +1,31 @@
 import 'dart:io';
 
-
 import 'package:chat_app/resources/app_paths.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lottie/lottie.dart';
 import 'package:uuid/uuid.dart';
 
-
 class Utils {
-
-static const uuid = Uuid();
+  static const uuid = Uuid();
 
   static const divider = SizedBox(
     height: 20,
   );
+
+  static snackBar(String message, BuildContext context) {
+    return ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+      ),
+    );
+  }
+
+  static showToastMessage(String message) {
+    Fluttertoast.showToast(msg: message);
+  }
+  
 
 // customTextFormField
   static TextFormField customTextFormField({
@@ -65,7 +76,7 @@ static const uuid = Uuid();
         fillColor: fillColor,
         prefixIconColor: prefixIconColor,
         suffixIconColor: suffixIconColor,
-        label:(label!=null)? Text(label):null,
+        label: (label != null) ? Text(label) : null,
         border: const OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(12)),
         ),
@@ -169,8 +180,7 @@ class ShowDialogModel {
     BuildContext context,
     String inputTitle,
     Widget inputContent,
-    List<Widget> inputActions,
-  ) {
+    List<Widget> inputActions, ) {
     showDialog(
         context: context,
         builder: (context) {

@@ -32,222 +32,331 @@ class _ChatSpaceRouteState extends State<ChatSpaceRoute> {
     final themeManager = Provider.of<ThemeManager>(context);
     final userProvider = Provider.of<UserProvider>(context);
     final chatSpaceProvider = Provider.of<ChatSpaceProvider>(context);
+    final messagesProvider = Provider.of<MessageStreamProvider>(context);
     return Scaffold(
       backgroundColor: themeManager.primary,
       body: SafeArea(
         bottom: false,
         child: Column(
           children: [
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: Icon(
-                        Icons.arrow_back_ios_new,
-                        color: themeManager.onprimaryLight,
-                        size: 22,
-                      ),
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: Icon(
+                      Icons.arrow_back_ios_new,
+                      color: themeManager.onprimaryLight,
+                      size: 22,
                     ),
-                    InkWell(
-                      overlayColor: MaterialStateProperty.all(
-                          Colors.white.withOpacity(0)),
-                      splashColor: Colors.white.withOpacity(0),
-                      onTap: () {},
-                      child: Row(
-                        children: [
-                          CircleAvatar(
-                            backgroundColor: themeManager.onprimaryLight,
-                            backgroundImage: (userProvider
-                                        .userData.profilePicture !=
-                                    null)
-                                ? NetworkImage(
-                                    userProvider.targetuserData.profilePicture!)
-                                : null,
-                          ),
-                          const SizedBox(
-                            width: 14,
-                          ),
-                          Text(
-                            userProvider.targetuserData.fullName!,
-                            style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: themeManager.onprimaryLight),
-                          ),
-                        ],
-                      ),
+                  ),
+                  InkWell(
+                    overlayColor:
+                        MaterialStateProperty.all(Colors.white.withOpacity(0)),
+                    splashColor: Colors.white.withOpacity(0),
+                    onTap: () {},
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          backgroundColor: themeManager.onprimaryLight,
+                          backgroundImage: (userProvider
+                                      .userData.profilePicture !=
+                                  null)
+                              ? NetworkImage(
+                                  userProvider.targetuserData.profilePicture!)
+                              : null,
+                        ),
+                        const SizedBox(
+                          width: 14,
+                        ),
+                        Text(
+                          userProvider.targetuserData.fullName!,
+                          style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: themeManager.onprimaryLight),
+                        ),
+                      ],
                     ),
-                    const Spacer(),
-                    Consumer<ChatSpaceProvider>(
-                        builder: (context, value, child) {
-                      return (value.getSelectedMessages.isEmpty)
-                          ? PopupMenuButton(
-                              color: themeManager.onprimaryLight,
-                              itemBuilder: (context) => [
-                                PopupMenuItem(
-                                  child: const Text(
-                                    "Clear chat",
-                                  ),
-                                  onTap: () {},
+                  ),
+                  const Spacer(),
+                  Consumer<ChatSpaceProvider>(builder: (context, value, child) {
+                    return (value.getSelectedMessages.isEmpty)
+                        ? PopupMenuButton(
+                            color: themeManager.onprimaryLight,
+                            itemBuilder: (context) => [
+                              PopupMenuItem(
+                                child: const Text(
+                                  "Clear chat",
                                 ),
-                                PopupMenuItem(
-                                  child: const Text("Report"),
-                                  onTap: () {},
-                                ),
-                                PopupMenuItem(
-                                  child: const Text("Block"),
-                                  onTap: () {},
-                                ),
-                                PopupMenuItem(
-                                  child: const Text("Pin"),
-                                  onTap: () {},
-                                ),
-                              ],
-                            )
-                          : Container(
-                              child: (value.getSelectedMessages.length == 1)
-                                  ? Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        IconButton(
-                                            padding: EdgeInsets.zero,
-                                            onPressed: () {},
-                                            icon: Icon(
-                                              Icons.reply,
-                                              color:
-                                                  themeManager.onprimaryLight,
-                                            )),
-                                        IconButton(
-                                            padding: EdgeInsets.zero,
-                                            onPressed: () {},
-                                            icon: Icon(
-                                              Icons.forward,
-                                              color:
-                                                  themeManager.onprimaryLight,
-                                            )),
-                                        PopupMenuButton(
-                                          color: themeManager.onprimaryLight,
-                                          itemBuilder: (context) => [
-                                            PopupMenuItem(
-                                              child: const Text("Delete"),
-                                              onTap: () {
-                                                ShowDialogModel.alertDialog(
-                                                  context,
-                                                  "Delete chat",
-                                                  const Column(
-                                                    children: [
+                                onTap: () async {
+                                  value.addAllSelectedMessages(
+                                      allMessages: value.messageStatesList);
+                                  int selectedLength =
+                                      value.getSelectedMessages.length;
+                                  messagesProvider.setIsHold(status: true);
+                                  for (int i = 0; i < selectedLength; i++) {
+                                    await chatSpaceProvider
+                                        .updateMessageDataOnFirestore(
+                                      messageData: value.getSelectedMessages[i],
+                                      userId: userProvider.userData.userId!,
+                                      deleteForMe: true,
+                                    );
+                                  }
+                                  messagesProvider.setIsHold(status: false);
+
+                                  value.removeAllSelectedMessages();
+                                },
+                              ),
+                              PopupMenuItem(
+                                child: const Text("Report"),
+                                onTap: () {
+                                  Utils.snackBar("Not available",context);
+                                },
+                              ),
+                              PopupMenuItem(
+                                child: const Text("Block"),
+                                onTap: () {},
+                              ),
+                              PopupMenuItem(
+                                child: const Text("Pin"),
+                                onTap: () {},
+                              ),
+                            ],
+                          )
+                        : Container(
+                            child: (value.getSelectedMessages.length == 1)
+                                ? Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      IconButton(
+                                          padding: EdgeInsets.zero,
+                                          onPressed: () {},
+                                          icon: Icon(
+                                            Icons.reply,
+                                            color: themeManager.onprimaryLight,
+                                          )),
+                                      IconButton(
+                                          padding: EdgeInsets.zero,
+                                          onPressed: () {},
+                                          icon: Icon(
+                                            Icons.forward,
+                                            color: themeManager.onprimaryLight,
+                                          )),
+                                      PopupMenuButton(
+                                        color: themeManager.onprimaryLight,
+                                        itemBuilder: (context) => [
+                                          PopupMenuItem(
+                                            child: const Text("Delete"),
+                                            onTap: () {
+                                              ShowDialogModel.alertDialog(
+                                                context,
+                                                "Delete chat",
+                                                Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    ListTile(
+                                                      title: const Text(
+                                                          "Delete for me"),
+                                                      onTap: () async {
+                                                        await chatSpaceProvider
+                                                            .updateMessageDataOnFirestore(
+                                                          messageData: value
+                                                              .getSelectedMessages[0],
+                                                          userId: userProvider
+                                                              .userData.userId!,
+                                                          deleteForMe: true,
+                                                        );
+                                                        if (mounted) {
+                                                          Navigator.pop(
+                                                              context);
+                                                        }
+                                                        // --deselect
+                                                        // value deleted from MessagestateList so cant use deSelectMessages
+                                                        // so msg isnt in state list but in selectedList, so just remove it.
+                                                        value
+                                                            .removeDeselectedMessages(
+                                                          deselectedMessage: value
+                                                              .getSelectedMessages[0],
+                                                        );
+                                                      },
+                                                    ),
+                                                    if (value
+                                                            .getSelectedMessages[
+                                                                0]
+                                                            .senderId !=
+                                                        userProvider
+                                                            .targetuserData
+                                                            .userId)
                                                       ListTile(
-                                                        title: Text("Delete for me"),
-                                                        
+                                                        title: const Text(
+                                                            "Delete for everyone"),
+                                                        onTap: () async {
+                                                          await value
+                                                              .deleteDataFromFireStore(
+                                                            messageData: value
+                                                                .getSelectedMessages[0],
+                                                          );
+                                                          if (mounted) {
+                                                            Navigator.pop(
+                                                                context);
+                                                          }
+                                                          value
+                                                              .removeDeselectedMessages(
+                                                            deselectedMessage:
+                                                                value.getSelectedMessages[
+                                                                    0],
+                                                          );
+                                                        },
                                                       ),
+                                                  ],
+                                                ),
+                                                [
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                    },
+                                                    child: const Text("Close"),
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          ),
+                                          PopupMenuItem(
+                                            child: const Text("Copy"),
+                                            onTap: () {
+                                              Clipboard.setData(
+                                                ClipboardData(
+                                                  text: value
+                                                      .getSelectedMessages[0]
+                                                      .text!,
+                                                ),
+                                              );
+                                              value.deSelectMessages(
+                                                slectedMessagesLength: value
+                                                    .getSelectedMessages.length,
+                                                value: value,
+                                              );
+                                            },
+                                          ),
+                                          PopupMenuItem(
+                                            child: const Text("Info"),
+                                            onTap: () {
+                                              String? sender =
+                                                  (value.getSelectedMessages[0]
+                                                              .senderId ==
+                                                          userProvider
+                                                              .userData.userId)
+                                                      ? userProvider
+                                                          .userData.fullName
+                                                      : userProvider
+                                                          .targetuserData
+                                                          .fullName;
+                                              ShowDialogModel.alertDialog(
+                                                  context,
+                                                  "Info",
+                                                  Row(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: [
+                                                      Text(
+                                                        "Chat: ${value.getSelectedMessages[0].text}\nSender: $sender\nData-time: ${DateFormat("H:mm d/M/yy").format(value.getSelectedMessages[0].createdOn!)}",
+                                                      )
                                                     ],
                                                   ),
                                                   [
                                                     TextButton(
-                                                        onPressed: () {
-                                                          Navigator.pop(
-                                                              context);
-                                                        },
-                                                        child: const Text("Close"),),
-                                                  ],
-                                                );
-                                              },
-                                            ),
-                                            PopupMenuItem(
-                                              child: const Text("Copy"),
-                                              onTap: () {
-                                                Clipboard.setData(
-                                                  ClipboardData(
-                                                    text: value
-                                                        .getSelectedMessages[0]
-                                                        .text!,
-                                                  ),
-                                                );
-                                                value.updateMessageState(
-                                                  messageData: value
-                                                      .getSelectedMessages[0],
-                                                  index: 0,
-                                                  helperProvider: value,
-                                                  isMessageSelected: false,
-                                                );
-                                              },
-                                            ),
-                                            PopupMenuItem(
-                                              child: const Text("Info"),
-                                              onTap: () {},
-                                            ),
-                                          ],
-                                        )
-                                      ],
-                                    )
-                                  : Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        IconButton(
-                                            padding: EdgeInsets.zero,
-                                            onPressed: () {},
-                                            icon: Icon(
-                                              Icons.forward,
-                                              color:
-                                                  themeManager.onprimaryLight,
-                                            )),
-                                        IconButton(
-                                            padding: EdgeInsets.zero,
-                                            onPressed: () {},
-                                            icon: Icon(
-                                              Icons.delete,
-                                              color:
-                                                  themeManager.onprimaryLight,
-                                            )),
-                                        IconButton(
-                                            padding: EdgeInsets.zero,
-                                            onPressed: () {
-                                              String copyData = "";
-                                              for (MessageModel data in value
-                                                  .getSelectedMessages) {
-                                                copyData =
-                                                    "$copyData\n${data.text}";
-                                              }
-                                              Clipboard.setData(
-                                                ClipboardData(
-                                                  text: copyData.trim(),
-                                                ),
-                                              );
-                                              // debugPrint(value
-                                              //     .getSelectedMessages.length
-                                              //     .toString());
-                                              int slectedLength = value
-                                                  .getSelectedMessages.length;
-                                              for (int i = 0;
-                                                  i < slectedLength;
-                                                  i++) {
-                                                // debugPrint("index : $i");
-                                                value.updateMessageState(
-                                                  messageData: value
-                                                      .getSelectedMessages[0],
-                                                  index: i,
-                                                  helperProvider: value,
-                                                  isMessageSelected: false,
-                                                );
-                                              }
+                                                      onPressed: () {
+                                                        Navigator.pop(context);
+                                                      },
+                                                      child:
+                                                          const Text("Close"),
+                                                    ),
+                                                  ]);
                                             },
-                                            icon: Icon(
-                                              Icons.copy,
-                                              color:
-                                                  themeManager.onprimaryLight,
-                                            )),
-                                      ],
-                                    ),
-                            );
-                    }),
-                  ],
-                ),
+                                          ),
+                                        ],
+                                      )
+                                    ],
+                                  )
+                                // multi-select
+                                : Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      IconButton(
+                                          padding: EdgeInsets.zero,
+                                          onPressed: () {},
+                                          icon: Icon(
+                                            Icons.forward,
+                                            color: themeManager.onprimaryLight,
+                                          )),
+                                      IconButton(
+                                          padding: EdgeInsets.zero,
+                                          onPressed: () async {
+                                            int selectedLength = value
+                                                .getSelectedMessages.length;
+                                            messagesProvider.setIsHold(
+                                                status: true);
+                                            for (int i = 0;
+                                                i < selectedLength;
+                                                i++) {
+                                              await chatSpaceProvider
+                                                  .updateMessageDataOnFirestore(
+                                                messageData: value
+                                                    .getSelectedMessages[i],
+                                                userId: userProvider
+                                                    .userData.userId!,
+                                                deleteForMe: true,
+                                              );
+                                            }
+                                            messagesProvider.setIsHold(
+                                                status: false);
+
+                                            value.removeAllSelectedMessages();
+                                          },
+                                          icon: Icon(
+                                            Icons.delete,
+                                            color: themeManager.onprimaryLight,
+                                          )),
+                                      IconButton(
+                                          padding: EdgeInsets.zero,
+                                          onPressed: () {
+                                            String copyData = "";
+                                            for (MessageModel data
+                                                in value.getSelectedMessages) {
+                                              copyData =
+                                                  "$copyData\n${data.text}";
+                                            }
+                                            Clipboard.setData(
+                                              ClipboardData(
+                                                text: copyData.trim(),
+                                              ),
+                                            );
+                                            // debugPrint(value
+                                            //     .getSelectedMessages.length
+                                            //     .toString());
+                                            // ----------
+
+                                            value.deSelectMessages(
+                                              slectedMessagesLength: value
+                                                  .getSelectedMessages.length,
+                                              value: value,
+                                            );
+                                          },
+                                          icon: Icon(
+                                            Icons.copy,
+                                            color: themeManager.onprimaryLight,
+                                          )),
+                                    ],
+                                  ),
+                          );
+                  }),
+                ],
               ),
             ),
             Expanded(
@@ -264,8 +373,8 @@ class _ChatSpaceRouteState extends State<ChatSpaceRoute> {
                     children: [
                       Expanded(
                           child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 12),
+                        padding: const EdgeInsets.only(
+                            left: 10, right: 10, bottom: 12),
                         child: Consumer<MessageStreamProvider>(
                             builder: (context, value, child) {
                           return ListView.builder(
@@ -470,7 +579,9 @@ class _ChatSpaceRouteState extends State<ChatSpaceRoute> {
                                   onPressed: () {
                                     chatSpaceProvider.sendMessage(
                                       messageController: _messageController,
-                                      senderId: userProvider.userData.userId!,
+                                      userId: userProvider.userData.userId!,
+                                      targetUserId:
+                                          userProvider.targetuserData.userId!,
                                       chatSpaceData:
                                           chatSpaceProvider.chatSpaceData,
                                       context: context,

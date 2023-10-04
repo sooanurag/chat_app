@@ -13,17 +13,19 @@ class UserModel {
   String? info;
   List<String>? userNameListForSearch;
 
-  UserModel(
-      {this.userId,
-      this.firebaseUser,
-      this.fullName,
-      this.emailId,
-      this.profilePicture,
-      this.phoneNumber,
-      this.activeStatus = false,
-      this.isArchived = false,
-      this.isPinned = false,
-      this.info});
+  UserModel({
+    this.userId,
+    this.firebaseUser,
+    this.fullName,
+    this.emailId,
+    this.profilePicture,
+    this.phoneNumber,
+    this.activeStatus = false,
+    this.isArchived = false,
+    this.isPinned = false,
+    this.info,
+    
+  });
 
   UserModel.fromMap(Map<String, dynamic> map) {
     userId = map["userId"];
@@ -35,6 +37,7 @@ class UserModel {
     isArchived = map["isArchived"];
     isPinned = map["isPinned"];
     info = map["info"];
+    
   }
 
   Map<String, dynamic> toMap() {
@@ -49,6 +52,7 @@ class UserModel {
       "isPinned": isPinned,
       "info": info,
       "userNameListForSearch": userNameListForSearch,
+      
     };
   }
 }

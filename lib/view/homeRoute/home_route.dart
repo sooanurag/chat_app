@@ -122,6 +122,7 @@ class _HomeRouteState extends State<HomeRoute> {
                                             // init stream
                                             messageStreamProvider
                                                 .initStreamAndStore(
+                                                  userId: userProvider.userData.userId!,
                                               context: context,
                                               chatSpaceId: chatSpaceProvider
                                                   .chatSpaceData.chatSpaceId!,

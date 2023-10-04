@@ -8,6 +8,7 @@ class MessageModel {
   bool isForwarded = false;
   bool isSelected = false;
   bool isStar = false;
+  Map<String, dynamic>? deleteForMeCheck;
 
   MessageModel({
     this.senderId,
@@ -19,6 +20,7 @@ class MessageModel {
     this.isForwarded = false,
     this.isSelected = false,
     this.isStar = false,
+    this.deleteForMeCheck,
   });
 
   MessageModel.fromMap(Map<String, dynamic> map) {
@@ -30,6 +32,7 @@ class MessageModel {
     isReply = map["isReply"];
     isForwarded = map["isForwarded"];
     isStar = map["isStar"];
+    deleteForMeCheck = map["deleteForMeCheck"];
   }
 
   Map<String, dynamic> toMap() {
@@ -42,6 +45,7 @@ class MessageModel {
       "isReply": isReply,
       "isForwarded": isForwarded,
       "isStar": isStar,
+      "deleteForMeCheck":deleteForMeCheck,
     };
   }
 }
