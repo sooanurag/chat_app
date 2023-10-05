@@ -1,6 +1,7 @@
-
 import 'package:chat_app/model/user_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class UserProvider with ChangeNotifier {
   UserModel _userData = UserModel();
@@ -18,4 +19,20 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  listenToUserStatus({
+    required BuildContext context,
+  }) {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc(userProvider.targetuserData.userId)
+        .snapshots()
+        .listen((event) {
+      UserModel targetUser = UserModel.fromMap(event.data()!);
+      (targetUser.activeStatus!)
+          ? userProvider.targetuserData.activeStatus = true
+          : userProvider.targetuserData.activeStatus = false;
+      notifyListeners();
+    });
+  }
 }

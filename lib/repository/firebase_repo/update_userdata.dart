@@ -28,7 +28,7 @@ Future<void> updateUserDataRepo({
 
   userProvider.setUserData(userData: updateUser);
 
-  FirebaseHelper.storeUserData(userData: userProvider.userData);
+   FirebaseHelper.storeUserData(userData: userProvider.userData);
 }
 
 getList({

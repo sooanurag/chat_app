@@ -268,7 +268,7 @@ class _SearchRouteState extends State<SearchRoute> {
                                             );
                                             chatSpaceProvider
                                                 .removeAllSelectedMessages();
-                                            Navigator.pushNamed(
+                                            Navigator.pushReplacementNamed(
                                                 context, RouteName.chatspace);
                                           }
                                         },

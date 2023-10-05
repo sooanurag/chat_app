@@ -4,11 +4,12 @@ class ChatSpaceModel {
   String? lastMessage;
   DateTime? lastMessageTimeStamp;
 
-  ChatSpaceModel(
-      {this.chatSpaceId,
-      this.participants,
-      this.lastMessage,
-      this.lastMessageTimeStamp});
+  ChatSpaceModel({
+    this.chatSpaceId,
+    this.participants,
+    this.lastMessage,
+    this.lastMessageTimeStamp,
+  });
 
   ChatSpaceModel.fromMap(Map<String, dynamic> map) {
     chatSpaceId = map["chatSpaceId"];
@@ -22,7 +23,7 @@ class ChatSpaceModel {
       "chatSpaceId": chatSpaceId,
       "participants": participants,
       "lastMessage": lastMessage,
-      "lastMessageTimeStamp":lastMessageTimeStamp,
+      "lastMessageTimeStamp": lastMessageTimeStamp,
     };
   }
 }

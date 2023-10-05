@@ -260,7 +260,7 @@ class ChatSpaceProvider with ChangeNotifier {
             newMessage.toMap(),
           );
       messageController.clear();
-      chatSpaceData.lastMessage = inputMessage;
+      chatSpaceData.lastMessage = '- $inputMessage';
       chatSpaceData.lastMessageTimeStamp = DateTime.now();
       FirebaseFirestore.instance
           .collection("chatspace")

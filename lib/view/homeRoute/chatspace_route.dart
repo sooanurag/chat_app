@@ -1,6 +1,7 @@
 import 'package:chat_app/resources/components/chatspace_components/forward_bottomsheet.dart';
 import 'package:chat_app/resources/components/chatspace_components/reply_container.dart';
 import 'package:chat_app/resources/components/chatspace_components/reply_textfiled.dart';
+
 import 'package:chat_app/utils/utils.dart';
 import 'package:chat_app/view_model/home/chatspace_provider.dart';
 import 'package:chat_app/view_model/home/stream_provider.dart';
@@ -75,12 +76,36 @@ class _ChatSpaceRouteState extends State<ChatSpaceRoute> {
                         const SizedBox(
                           width: 14,
                         ),
-                        Text(
-                          userProvider.targetuserData.fullName!,
-                          style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: themeManager.onprimaryLight),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              userProvider.targetuserData.fullName!,
+                              style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: themeManager.onprimaryLight),
+                            ),
+                            const SizedBox(
+                              height: 2,
+                            ),
+                            Consumer<UserProvider>(
+                                builder: (context, value, child) {
+                              return Text(
+                                value.targetuserData.activeStatus!
+                                    ? "Online"
+                                    : "Offline",
+                                style: TextStyle(
+                                  color: (value.targetuserData.activeStatus!)
+                                      ? themeManager.onprimaryLight
+                                      : Colors.grey,
+                                  fontWeight: FontWeight.w400,
+                                  fontStyle: FontStyle.italic,
+                                  fontSize: 14,
+                                ),
+                              );
+                            }),
+                          ],
                         ),
                       ],
                     ),

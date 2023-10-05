@@ -21,7 +21,33 @@ class HomeRoute extends StatefulWidget {
   State<HomeRoute> createState() => _HomeRouteState();
 }
 
-class _HomeRouteState extends State<HomeRoute> {
+class _HomeRouteState extends State<HomeRoute> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    WidgetsBinding.instance.addObserver(this);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    final homeProvider = Provider.of<HomeProvider>(context, listen: false);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    homeProvider.statusUpdate(userData: userProvider.userData, status: false);
+
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final homeProvider = Provider.of<HomeProvider>(context, listen: false);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    if (state == AppLifecycleState.resumed) {
+      homeProvider.statusUpdate(userData: userProvider.userData, status: true);
+    } else {
+      homeProvider.statusUpdate(userData: userProvider.userData, status: false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeManager = Provider.of<ThemeManager>(context);
@@ -29,6 +55,17 @@ class _HomeRouteState extends State<HomeRoute> {
     final userProvider = Provider.of<UserProvider>(context);
     final chatSpaceProvider = Provider.of<ChatSpaceProvider>(context);
     final messageStreamProvider = Provider.of<MessageStreamProvider>(context);
+
+    // init userStatus
+    userProvider.userData.activeStatus = true;
+    homeProvider.statusUpdate(
+      status: true,
+      userData: userProvider.userData,
+    );
+
+    // FirebaseHelper.storeUserData(userData: userProvider.userData);
+    // debugPrint(userProvider.userData.activeStatus.toString());
+
     return Scaffold(
       backgroundColor: themeManager.primary,
       body: SafeArea(
@@ -122,13 +159,17 @@ class _HomeRouteState extends State<HomeRoute> {
                                             // init stream
                                             messageStreamProvider
                                                 .initStreamAndStore(
-                                                  userId: userProvider.userData.userId!,
+                                              userId:
+                                                  userProvider.userData.userId!,
                                               context: context,
                                               chatSpaceId: chatSpaceProvider
                                                   .chatSpaceData.chatSpaceId!,
                                             );
                                             chatSpaceProvider
                                                 .removeAllSelectedMessages();
+                                            // init activeStream
+                                            userProvider.listenToUserStatus(
+                                                context: context);
                                             // push to route
                                             Navigator.pushNamed(
                                                 context, RouteName.chatspace);

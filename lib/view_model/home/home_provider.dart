@@ -30,4 +30,12 @@ class HomeProvider with ChangeNotifier {
   Stream<QuerySnapshot<Map<String, dynamic>>> fetchUsersFromCollection() {
     return FirebaseHelper.fetchCollection(collectionName: "users");
   }
+
+  statusUpdate({required UserModel userData, required bool status}) async {
+    userData.activeStatus = status;
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(userData.userId)
+        .set(userData.toMap());
+  }
 }

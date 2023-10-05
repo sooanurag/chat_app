@@ -9,11 +9,12 @@ Future<ChatSpaceModel> createChatSpace({
 }) async {
   ChatSpaceModel newChatSpace = ChatSpaceModel(
     chatSpaceId: Utils.uuid.v1(),
-    lastMessage: "",
+    lastMessage: "- Say hi!",
     participants: {
       userId: true,
       targetUserId: true,
     },
+
   );
 
   await FirebaseFirestore.instance
