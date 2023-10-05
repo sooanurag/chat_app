@@ -14,6 +14,11 @@ Future<ChatSpaceModel> createChatSpace({
       userId: true,
       targetUserId: true,
     },
+    unseenCounter: {
+      userId : 0,
+      targetUserId : 0,
+    }
+    
 
   );
 

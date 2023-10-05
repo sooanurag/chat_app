@@ -198,14 +198,65 @@ class _HomeRouteState extends State<HomeRoute> with WidgetsBindingObserver {
                                                       .lastMessageTimeStamp !=
                                                   null)
                                                 Text(
-                                                  DateFormat("H:mm - EEE")
-                                                      .format(chatSpaceData
+                                                  DateFormat("H:mm").format(
+                                                      chatSpaceData
                                                           .lastMessageTimeStamp!),
                                                   style: const TextStyle(
                                                       fontWeight:
                                                           FontWeight.bold,
                                                       fontSize: 10),
                                                 ),
+                                              const SizedBox(
+                                                height: 5,
+                                              ),
+                                              if (chatSpaceData.unseenCounter![
+                                                      userProvider
+                                                          .userData.userId] !=
+                                                  0)
+                                                Container(
+                                                  padding:
+                                                      const EdgeInsets.all(4),
+                                                  decoration: BoxDecoration(
+                                                    color:
+                                                        themeManager.onprimary,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            100),
+                                                  ),
+                                                  child: (chatSpaceData
+                                                                  .unseenCounter![
+                                                              userProvider
+                                                                  .userData
+                                                                  .userId] <=
+                                                          10)
+                                                      ? Text(
+                                                          chatSpaceData
+                                                              .unseenCounter![
+                                                                  userProvider
+                                                                      .userData
+                                                                      .userId]
+                                                              .toString(),
+                                                          style: TextStyle(
+                                                              color:
+                                                                  themeManager
+                                                                      .primary,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w800,
+                                                              fontSize: 12),
+                                                        )
+                                                      : Text(
+                                                          "10+",
+                                                          style: TextStyle(
+                                                              color:
+                                                                  themeManager
+                                                                      .primary,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w800,
+                                                              fontSize: 12),
+                                                        ),
+                                                )
                                             ],
                                           ),
                                         );

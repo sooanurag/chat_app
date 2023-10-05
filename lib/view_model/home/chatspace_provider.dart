@@ -2,9 +2,11 @@ import 'package:chat_app/model/chatspace_model.dart';
 import 'package:chat_app/services/firebase_helper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../model/message_model.dart';
 import '../../utils/utils.dart';
+import '../user_provider.dart';
 
 class ChatSpaceProvider with ChangeNotifier {
   List<MessageModel> _messageStateList = [];
@@ -222,11 +224,13 @@ class ChatSpaceProvider with ChangeNotifier {
     }
     chatSpaceData.lastMessage = lastMessage;
     chatSpaceData.lastMessageTimeStamp = DateTime.now();
+    chatSpaceData.unseenCounter![targetUserId] =
+        chatSpaceData.unseenCounter![targetUserId] + 1;
 
     FirebaseFirestore.instance
-          .collection("chatspace")
-          .doc(chatSpaceData.chatSpaceId)
-          .set(chatSpaceData.toMap());
+        .collection("chatspace")
+        .doc(chatSpaceData.chatSpaceId)
+        .set(chatSpaceData.toMap());
   }
 
   Future<void> sendMessage({
@@ -238,6 +242,7 @@ class ChatSpaceProvider with ChangeNotifier {
     bool? isReplied,
   }) async {
     String inputMessage = messageController.text.trim();
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
 
     if (inputMessage.isNotEmpty) {
       MessageModel newMessage = MessageModel(
@@ -245,6 +250,7 @@ class ChatSpaceProvider with ChangeNotifier {
         senderId: userId,
         text: inputMessage,
         createdOn: DateTime.now(),
+        seen: (userProvider.targetuserData.activeStatus!),
         deleteForMeCheck: {
           userId: true,
           targetUserId: true,
@@ -262,10 +268,43 @@ class ChatSpaceProvider with ChangeNotifier {
       messageController.clear();
       chatSpaceData.lastMessage = '- $inputMessage';
       chatSpaceData.lastMessageTimeStamp = DateTime.now();
+      // debugPrint(
+      //     (chatSpaceData.unseenCounter![targetUserId]).runtimeType.toString());
+      chatSpaceData.unseenCounter![targetUserId] =
+          chatSpaceData.unseenCounter![targetUserId] + 1;
       FirebaseFirestore.instance
           .collection("chatspace")
           .doc(chatSpaceData.chatSpaceId)
           .set(chatSpaceData.toMap());
     }
+  }
+
+  resetUnseenCount({
+    required UserProvider userProvider,
+    required ChatSpaceProvider chatSpaceProvider,
+  }) {
+    chatSpaceProvider
+        .chatSpaceData.unseenCounter![userProvider.userData.userId!] = 0;
+
+    FirebaseFirestore.instance
+        .collection("chatspace")
+        .doc(chatSpaceProvider.chatSpaceData.chatSpaceId)
+        .set(chatSpaceProvider.chatSpaceData.toMap());
+  }
+
+  listenToUnseenCount({
+    required ChatSpaceProvider chatSpaceProvider,
+    required String targetUser,
+  }) {
+    FirebaseFirestore.instance
+        .collection("chatspace")
+        .doc(chatSpaceProvider.chatSpaceData.chatSpaceId)
+        .snapshots()
+        .listen((event) {
+      ChatSpaceModel chatSpaceData = ChatSpaceModel.fromMap(event.data()!);
+      chatSpaceProvider.chatSpaceData.unseenCounter![targetUser] =
+          chatSpaceData.unseenCounter![targetUser];
+      notifyListeners();
+    });
   }
 }

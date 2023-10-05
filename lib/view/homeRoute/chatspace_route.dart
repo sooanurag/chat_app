@@ -23,11 +23,41 @@ class ChatSpaceRoute extends StatefulWidget {
 
 class _ChatSpaceRouteState extends State<ChatSpaceRoute> {
   final _messageController = TextEditingController();
+  ChatSpaceProvider? chatSpaceProvider;
+  UserProvider? userProvider;
+
+  @override
+  void initState() {
+    final chatSpaceProvider =
+        Provider.of<ChatSpaceProvider>(context, listen: false);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    chatSpaceProvider.resetUnseenCount(
+      chatSpaceProvider: chatSpaceProvider,
+      userProvider: userProvider,
+    );
+    chatSpaceProvider.listenToUnseenCount(
+      chatSpaceProvider: chatSpaceProvider,
+      targetUser: userProvider.targetuserData.userId!,
+    );
+
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    chatSpaceProvider = Provider.of<ChatSpaceProvider>(context, listen: false);
+    userProvider = Provider.of<UserProvider>(context, listen: false);
+  }
 
   @override
   void dispose() {
-    super.dispose();
+    chatSpaceProvider?.resetUnseenCount(
+      chatSpaceProvider: chatSpaceProvider!,
+      userProvider: userProvider!,
+    );
     _messageController.dispose();
+    super.dispose();
   }
 
   @override
@@ -578,17 +608,26 @@ class _ChatSpaceRouteState extends State<ChatSpaceRoute> {
                                               : MainAxisAlignment.start,
                                       children: [
                                         Text(
-                                          DateFormat("H:mm d/M/yy").format(
+                                          DateFormat("H:mm M/yy").format(
                                               currentMessage.createdOn!),
-                                          style: const TextStyle(fontSize: 8),
+                                          style: const TextStyle(fontSize: 9),
                                         ),
                                         const SizedBox(
                                           width: 2,
                                         ),
+                                        if(currentMessage.senderId == userProvider.userData.userId)
+                                        // Consumer<UserProvider>(builder: builder),
+                                        (!currentMessage.seen)?
                                         const Icon(
                                           Icons.done,
                                           size: 14,
-                                        ),
+                                        )
+                                        : const Icon(
+                                          Icons.done_all,
+                                          size: 14,
+                                          color: Colors.blue,
+                                        )
+                                        ,
                                       ],
                                     ),
                                     const SizedBox(
