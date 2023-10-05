@@ -25,6 +25,7 @@ class _HomeRouteState extends State<HomeRoute> with WidgetsBindingObserver {
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
+    
     super.initState();
   }
 
@@ -167,9 +168,11 @@ class _HomeRouteState extends State<HomeRoute> with WidgetsBindingObserver {
                                             );
                                             chatSpaceProvider
                                                 .removeAllSelectedMessages();
-                                            // init activeStream
+                                            // init isuseractive-Stream
                                             userProvider.listenToUserStatus(
                                                 context: context);
+                                            // chatroom active
+
                                             // push to route
                                             Navigator.pushNamed(
                                                 context, RouteName.chatspace);

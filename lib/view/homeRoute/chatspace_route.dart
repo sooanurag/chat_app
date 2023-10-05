@@ -7,6 +7,7 @@ import 'package:chat_app/view_model/home/chatspace_provider.dart';
 import 'package:chat_app/view_model/home/stream_provider.dart';
 import 'package:chat_app/view_model/theme/theme_manager.dart';
 import 'package:chat_app/view_model/user_provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -40,6 +41,32 @@ class _ChatSpaceRouteState extends State<ChatSpaceRoute> {
       targetUser: userProvider.targetuserData.userId!,
     );
 
+    chatSpaceProvider.chatSpaceData.whichChatSpaceUserActive!
+        .update(userProvider.userData.userId!, (value) => value = true);
+    FirebaseFirestore.instance
+        .collection("chatspace")
+        .doc(chatSpaceProvider.chatSpaceData.chatSpaceId)
+        .set(chatSpaceProvider.chatSpaceData.toMap());
+
+    // chatSpaceProvider.listenTochatspace(context: context);
+
+    for (Map<String, dynamic> unseenMessageMap in chatSpaceProvider
+        .chatSpaceData
+        .unseenMessagesList![userProvider.targetuserData.userId!]) {
+      MessageModel unseenMessage = MessageModel.fromMap(unseenMessageMap);
+      unseenMessage.seen = true;
+      FirebaseFirestore.instance
+          .collection("chatspace")
+          .doc(chatSpaceProvider.chatSpaceData.chatSpaceId)
+          .collection("messages")
+          .doc(unseenMessage.messageId)
+          .update(
+            unseenMessage.toMap(),
+          );
+    }
+    chatSpaceProvider.chatSpaceData
+        .unseenMessagesList![userProvider.targetuserData.userId!] = [];
+
     super.initState();
   }
 
@@ -56,6 +83,18 @@ class _ChatSpaceRouteState extends State<ChatSpaceRoute> {
       chatSpaceProvider: chatSpaceProvider!,
       userProvider: userProvider!,
     );
+
+    chatSpaceProvider?.chatSpaceData.whichChatSpaceUserActive!
+        .update(userProvider!.userData.userId!, (value) => value = false);
+    // chatSpaceProvider?.chatSpaceData.whichChatSpaceUserActive = {
+    //   userProvider!.userData.userId!: false,
+    //   userProvider!.targetuserData.userId!: chatSpaceProvider?.chatSpaceData
+    //       .whichChatSpaceUserActive![userProvider?.targetuserData.userId!],
+    // };
+    FirebaseFirestore.instance
+        .collection("chatspace")
+        .doc(chatSpaceProvider?.chatSpaceData.chatSpaceId)
+        .set(chatSpaceProvider!.chatSpaceData.toMap());
     _messageController.dispose();
     super.dispose();
   }
@@ -615,19 +654,19 @@ class _ChatSpaceRouteState extends State<ChatSpaceRoute> {
                                         const SizedBox(
                                           width: 2,
                                         ),
-                                        if(currentMessage.senderId == userProvider.userData.userId)
-                                        // Consumer<UserProvider>(builder: builder),
-                                        (!currentMessage.seen)?
-                                        const Icon(
-                                          Icons.done,
-                                          size: 14,
-                                        )
-                                        : const Icon(
-                                          Icons.done_all,
-                                          size: 14,
-                                          color: Colors.blue,
-                                        )
-                                        ,
+                                        if (currentMessage.senderId ==
+                                            userProvider.userData.userId)
+                                          // Consumer<UserProvider>(builder: builder),
+                                          (!currentMessage.seen)
+                                              ? const Icon(
+                                                  Icons.done,
+                                                  size: 14,
+                                                )
+                                              : const Icon(
+                                                  Icons.done_all,
+                                                  size: 14,
+                                                  color: Colors.blue,
+                                                ),
                                       ],
                                     ),
                                     const SizedBox(

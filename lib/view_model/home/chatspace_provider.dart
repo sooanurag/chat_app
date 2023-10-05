@@ -210,6 +210,8 @@ class ChatSpaceProvider with ChangeNotifier {
       };
       forwardedMessageData.isReply = false;
       forwardedMessageData.isForwarded = true;
+      forwardedMessageData.seen =
+          (chatSpaceData.whichChatSpaceUserActive![targetUserId]);
 
       lastMessage = forwardedMessageData.text!;
 
@@ -221,7 +223,11 @@ class ChatSpaceProvider with ChangeNotifier {
           .set(
             forwardedMessageData.toMap(),
           );
+      if ((chatSpaceData.whichChatSpaceUserActive![targetUserId]) == false) {
+        chatSpaceData.unseenMessagesList![userId].add(forwardedMessageData);
+      }
     }
+    
     chatSpaceData.lastMessage = lastMessage;
     chatSpaceData.lastMessageTimeStamp = DateTime.now();
     chatSpaceData.unseenCounter![targetUserId] =
@@ -242,7 +248,7 @@ class ChatSpaceProvider with ChangeNotifier {
     bool? isReplied,
   }) async {
     String inputMessage = messageController.text.trim();
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    // final userProvider = Provider.of<UserProvider>(context, listen: false);
 
     if (inputMessage.isNotEmpty) {
       MessageModel newMessage = MessageModel(
@@ -250,7 +256,7 @@ class ChatSpaceProvider with ChangeNotifier {
         senderId: userId,
         text: inputMessage,
         createdOn: DateTime.now(),
-        seen: (userProvider.targetuserData.activeStatus!),
+        seen: (chatSpaceData.whichChatSpaceUserActive![targetUserId]),
         deleteForMeCheck: {
           userId: true,
           targetUserId: true,
@@ -265,19 +271,41 @@ class ChatSpaceProvider with ChangeNotifier {
           .set(
             newMessage.toMap(),
           );
-      messageController.clear();
+
       chatSpaceData.lastMessage = '- $inputMessage';
       chatSpaceData.lastMessageTimeStamp = DateTime.now();
+      if ((chatSpaceData.whichChatSpaceUserActive![targetUserId]) == false) {
+        chatSpaceData.unseenMessagesList![userId].add(newMessage.toMap());
+      }
       // debugPrint(
       //     (chatSpaceData.unseenCounter![targetUserId]).runtimeType.toString());
       chatSpaceData.unseenCounter![targetUserId] =
           chatSpaceData.unseenCounter![targetUserId] + 1;
+      messageController.clear();
       FirebaseFirestore.instance
           .collection("chatspace")
           .doc(chatSpaceData.chatSpaceId)
           .set(chatSpaceData.toMap());
     }
   }
+
+  // listenTochatspace({
+  //   required BuildContext context,
+  // }) {
+  //   final chatspaceprovider =
+  //       Provider.of<ChatSpaceProvider>(context, listen: false);
+  //   final userProvider = Provider.of<UserProvider>(context, listen: false);
+  //   FirebaseFirestore.instance
+  //       .collection("chatspace")
+  //       .doc(chatspaceprovider.chatSpaceData.chatSpaceId)
+  //       .snapshots()
+  //       .listen((event) {
+  //     ChatSpaceModel currentChatspace = ChatSpaceModel.fromMap(event.data()!);
+  //     chatspaceprovider.chatSpaceData.whichChatSpaceUserActive![userProvider.targetuserData.userId!] = currentChatspace.whichChatSpaceUserActive![userProvider.userData.userId];
+
+  //     notifyListeners();
+  //   });
+  // }
 
   resetUnseenCount({
     required UserProvider userProvider,

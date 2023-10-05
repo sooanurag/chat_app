@@ -2,15 +2,19 @@ class ChatSpaceModel {
   String? chatSpaceId;
   Map<String, dynamic>? participants;
   Map<String, dynamic>? unseenCounter;
+  Map<String, dynamic>? unseenMessagesList;
   String? lastMessage;
   DateTime? lastMessageTimeStamp;
+  Map<String, dynamic>? whichChatSpaceUserActive;
 
   ChatSpaceModel({
     this.chatSpaceId,
     this.participants,
     this.lastMessage,
     this.lastMessageTimeStamp,
-    this.unseenCounter
+    this.unseenCounter,
+    this.unseenMessagesList,
+    this.whichChatSpaceUserActive,
   });
 
   ChatSpaceModel.fromMap(Map<String, dynamic> map) {
@@ -19,6 +23,8 @@ class ChatSpaceModel {
     lastMessage = map["lastMessage"];
     lastMessageTimeStamp = map["lastMessageTimeStamp"]?.toDate();
     unseenCounter = map["unseenCounter"];
+    unseenMessagesList = map["unseenMessagesList"];
+    whichChatSpaceUserActive = map["whichChatSpaceUserActive"];
   }
 
   Map<String, dynamic> toMap() {
@@ -27,7 +33,9 @@ class ChatSpaceModel {
       "participants": participants,
       "lastMessage": lastMessage,
       "lastMessageTimeStamp": lastMessageTimeStamp,
-      "unseenCounter":unseenCounter,
+      "unseenCounter": unseenCounter,
+      "unseenMessagesList": unseenMessagesList,
+      "whichChatSpaceUserActive":whichChatSpaceUserActive,
     };
   }
 }
