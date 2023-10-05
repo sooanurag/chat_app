@@ -1,7 +1,6 @@
-import 'package:chat_app/model/message_model.dart';
+
 import 'package:chat_app/utils/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 
 import '../../model/chatspace_model.dart';
 
