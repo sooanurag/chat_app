@@ -32,10 +32,12 @@ class HomeProvider with ChangeNotifier {
   }
 
   statusUpdate({required UserModel userData, required bool status}) async {
+    if(userData.userId!=null){
     userData.activeStatus = status;
+    debugPrint("inside home Provider :${userData.userId}");
     await FirebaseFirestore.instance
         .collection("users")
         .doc(userData.userId)
-        .set(userData.toMap());
+        .set(userData.toMap());}
   }
 }

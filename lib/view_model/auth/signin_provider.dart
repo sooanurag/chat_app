@@ -47,7 +47,7 @@ class SignInProvider with ChangeNotifier {
         userId: userCredential.user!.uid,
       );
       userData!.firebaseUser = userCredential.user;
-      debugPrint(userData.fullName);
+      // debugPrint(userData.fullName);
       userProvider.setUserData(userData: userData);
     }
   }

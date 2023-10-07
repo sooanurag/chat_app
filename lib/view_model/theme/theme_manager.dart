@@ -6,6 +6,9 @@ class ThemeManager with ChangeNotifier {
   get themeMode => _themeMode;
   toogleTheme({required bool isDark}) {
     _themeMode = (isDark) ? _themeMode = ThemeMode.dark : ThemeMode.light;
+    (isDark)
+        ? setColorPallet(pallet: AppColors.blackGreenDark)
+        : setColorPallet(pallet: AppColors.defaultGreenYellow);
     notifyListeners();
   }
 

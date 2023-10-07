@@ -115,17 +115,33 @@ class _SignUpRouteState extends State<SignUpRoute> {
                             otpController: otpController,
                             formKey: signUpFormKey,
                             onPress: () async {
-                              await signUpProvider.onPressSignUpForm(
-                                signUpFormKey: signUpFormKey,
-                                value: value,
-                                context: context,
-                                emailController: emailController,
-                                passwordController: passwordController,
-                                phoneController: phoneController,
-                                otpController: otpController,
-                                signUpProvider: signUpProvider,
-                                timerFuction: timerFuction,
-                              );
+                              try {
+                                await signUpProvider.onPressSignUpForm(
+                                  signUpFormKey: signUpFormKey,
+                                  value: value,
+                                  context: context,
+                                  emailController: emailController,
+                                  passwordController: passwordController,
+                                  cpasswordController: cPasswordController,
+                                  phoneController: phoneController,
+                                  otpController: otpController,
+                                  signUpProvider: signUpProvider,
+                                  timerFuction: timerFuction,
+                                );
+                              } catch (e) {
+                                if(mounted){
+                                ShowDialogModel.alertDialog(
+                                    context, "Warning", Text(e.toString()), [
+                                  TextButton(
+                                    onPressed: () {
+                                      if (mounted) {
+                                        Navigator.pop(context);
+                                      }
+                                    },
+                                    child: const Text("close"),
+                                  )
+                                ]);}
+                              }
                             },
                           )
                         : (!value.isLoading)
@@ -139,7 +155,8 @@ class _SignUpRouteState extends State<SignUpRoute> {
                                 lastNameController: lastNameController,
                                 aboutController: aboutController,
                                 onPress: () async {
-                                  await signUpProvider.onPressCompleteProfileForm(
+                                  await signUpProvider
+                                      .onPressCompleteProfileForm(
                                     completeProfileKey: completeProfileKey,
                                     signUpProvider: signUpProvider,
                                     context: context,

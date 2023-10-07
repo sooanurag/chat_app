@@ -150,7 +150,7 @@ class SignUpProvider with ChangeNotifier {
     );
   }
 
-  Future<String> uploadDataToStorage({
+  Future<String?> uploadDataToStorage({
     required File imageFile,
     required BuildContext context,
   }) async {
@@ -166,16 +166,19 @@ class SignUpProvider with ChangeNotifier {
     required BuildContext context,
     required emailController,
     required passwordController,
+    required cpasswordController,
     required phoneController,
     required otpController,
     required signUpProvider,
     required timerFuction,
   }) async {
-
     debugPrint(signUpFormKey.currentState!.validate().toString());
     if (value.buttonTitle == "Sign Up" || value.buttonTitle == "Verify") {
+      if (passwordController.text != cpasswordController.text) {
+        throw FirebaseAuthException(code: "Password fields don't match!");
+      }
       if (signUpFormKey.currentState!.validate()) {
-        debugPrint(value.buttonTitle);
+        // debugPrint(value.buttonTitle);
         (value.buttonTitle == "Sign Up")
             ? await value.createAccountWithEmailPassowrd(
                 context: context,
@@ -199,9 +202,10 @@ class SignUpProvider with ChangeNotifier {
           context: context,
         );
       }
-      if(!signUpProvider.isExceptionOccured){
-      signUpProvider.setPhoneStatus(false);
-      signUpProvider.setButtonValue(buttonTitle: "Verify");}
+      if (!signUpProvider.isExceptionOccured) {
+        signUpProvider.setPhoneStatus(false);
+        signUpProvider.setButtonValue(buttonTitle: "Verify");
+      }
     }
   }
 
@@ -225,9 +229,10 @@ class SignUpProvider with ChangeNotifier {
             : null,
       );
       debugPrint("saved user data");
-      if(context.mounted){
+      if (context.mounted) {
         Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.pushReplacementNamed(context, RouteName.home);}
+        Navigator.pushReplacementNamed(context, RouteName.home);
+      }
     }
   }
 }

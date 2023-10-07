@@ -10,6 +10,7 @@ import 'package:chat_app/view_model/home/stream_provider.dart';
 import 'package:chat_app/view_model/theme/theme_manager.dart';
 import 'package:chat_app/view_model/user_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
@@ -22,30 +23,55 @@ class HomeRoute extends StatefulWidget {
 }
 
 class _HomeRouteState extends State<HomeRoute> with WidgetsBindingObserver {
+  HomeProvider? homeProvider;
+  UserProvider? userProvider;
+
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
-    
+    userProvider = Provider.of<UserProvider>(context, listen: false);
+    if (FirebaseAuth.instance.currentUser != null) {
+      _initUserData(
+        userId: FirebaseAuth.instance.currentUser!.uid,
+        userProvider: userProvider!,
+      );
+    }
+
     super.initState();
+  }
+
+  Future<void> _initUserData({
+    required String userId,
+    required UserProvider userProvider,
+  }) async {
+    UserModel? userData = await FirebaseHelper.fetchUserData(userId: userId);
+    userData!.firebaseUser = FirebaseAuth.instance.currentUser!;
+    userProvider.setUserData(userData: userData);
   }
 
   @override
   void dispose() {
-    final homeProvider = Provider.of<HomeProvider>(context, listen: false);
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    homeProvider.statusUpdate(userData: userProvider.userData, status: false);
+    //  homeProvider = Provider.of<HomeProvider>(context, listen: false);
+    //  userProvider = Provider.of<UserProvider>(context, listen: false);
+    if (userProvider!.userData.userId != null) {
+      homeProvider!.statusUpdate(userData: userProvider!.userData, status: false);
+    }
 
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    final homeProvider = Provider.of<HomeProvider>(context, listen: false);
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    if (state == AppLifecycleState.resumed) {
-      homeProvider.statusUpdate(userData: userProvider.userData, status: true);
+     homeProvider = Provider.of<HomeProvider>(context, listen: false);
+     userProvider = Provider.of<UserProvider>(context, listen: false);
+    if (state == AppLifecycleState.resumed &&
+        userProvider?.userData.userId != null) {
+      homeProvider?.statusUpdate(userData: userProvider!.userData, status: true);
     } else {
-      homeProvider.statusUpdate(userData: userProvider.userData, status: false);
+      if (userProvider?.userData.userId != null) {
+        homeProvider?.statusUpdate(
+            userData: userProvider!.userData, status: false);
+      }
     }
   }
 
@@ -63,9 +89,6 @@ class _HomeRouteState extends State<HomeRoute> with WidgetsBindingObserver {
       status: true,
       userData: userProvider.userData,
     );
-
-    // FirebaseHelper.storeUserData(userData: userProvider.userData);
-    // debugPrint(userProvider.userData.activeStatus.toString());
 
     return Scaffold(
       backgroundColor: themeManager.primary,
@@ -91,11 +114,9 @@ class _HomeRouteState extends State<HomeRoute> with WidgetsBindingObserver {
                   const Spacer(),
                   InkWell(
                     onTap: () {
-                      // userProvider.setTargetUserData(
-                      //                           targetUserData: targetUser);
-                      //                       chatSpaceProvider.setChatSpaceData(
-                      //                           chatSpaceData: chatSpaceData);
-                      Navigator.pushNamed(context, RouteName.profile);
+                      FirebaseAuth.instance.signOut();
+                      homeProvider.statusUpdate(userData: userProvider.userData, status: false);
+                      Navigator.pushNamed(context, RouteName.welcome);
                     },
                     child: CircleAvatar(
                       radius: 20,
@@ -104,8 +125,14 @@ class _HomeRouteState extends State<HomeRoute> with WidgetsBindingObserver {
                               null)
                           ? NetworkImage(userProvider.userData.profilePicture!)
                           : null,
+                      child: (userProvider.userData.profilePicture ==
+                              null)? Icon(
+                        Icons.logout_outlined,
+                        color: themeManager.onprimaryLight,
+                      ):null,
                     ),
                   ),
+                  // PopupMenuButton(itemBuilder: itemBuilder)
                 ],
               ),
             ),
@@ -181,10 +208,11 @@ class _HomeRouteState extends State<HomeRoute> with WidgetsBindingObserver {
                                             backgroundColor:
                                                 themeManager.onprimary,
                                             backgroundImage: (targetUser
-                                                    .profilePicture!.isNotEmpty)
+                                                    .profilePicture!=null)
                                                 ? NetworkImage(
                                                     targetUser.profilePicture!)
                                                 : null,
+                                            child: Icon(Icons.person, color: themeManager.primary,),
                                           ),
                                           title: Text(targetUser.fullName!),
                                           subtitle: Text(

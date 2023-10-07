@@ -39,11 +39,12 @@ class AppColors {
     Color.fromRGBO(250, 242, 242, 1.0),
   ];
 
-  static const List<Color> blackGreenDark = [
-    Color.fromRGBO(4, 13, 18, 1.0),
-    Color.fromRGBO(24, 61, 61, 1.0),
-    Color.fromRGBO(92, 131, 116, 1.0),
-    Color.fromRGBO(147, 177, 166, 1.0),
+  static  List<Color> blackGreenDark = [
+    const Color.fromRGBO(4, 13, 18, 1.0),
+    const Color.fromRGBO(24, 61, 61, 1.0),
+    const Color.fromRGBO(92, 131, 116, 1.0),
+    Colors.grey.withOpacity(0.4),
+    const Color.fromARGB(255, 77, 76, 76),
   ];
 
   static const List<Color> purplePalletDark = [

@@ -22,4 +22,5 @@ ThemeData lightTheme = ThemeData().copyWith(
 ThemeData darkTheme = ThemeData.dark().copyWith(
   useMaterial3: true,
   colorScheme: kDarkColorScheme,
+  // scaffoldBackgroundColor: Colors.white,
 );

@@ -154,7 +154,7 @@ class Utils {
 
 // select Image
   static selectImage(ImageSource source) async {
-    XFile? pickedImageFile = await ImagePicker().pickImage(source: source);
+    XFile? pickedImageFile = await ImagePicker().pickImage(source: source,imageQuality: 30);
     if (pickedImageFile != null) {
       // cropImage(pickedImageFile);
       imageFile.value = File(pickedImageFile.path);

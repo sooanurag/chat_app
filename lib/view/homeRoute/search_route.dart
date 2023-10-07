@@ -126,11 +126,14 @@ class _SearchRouteState extends State<SearchRoute> {
                                           radius: 20,
                                           backgroundColor:
                                               themeManager.onprimary,
-                                          backgroundImage: (targetUserData
-                                                  .profilePicture!=null)
-                                              ? NetworkImage(targetUserData
-                                                  .profilePicture!)
-                                              : null,
+                                          backgroundImage:
+                                              (targetUserData.profilePicture !=
+                                                      null)
+                                                  ? NetworkImage(targetUserData
+                                                      .profilePicture!)
+                                                  : null,
+                                          child: (targetUserData.profilePicture ==
+                                                      null)? Icon(Icons.person, color: themeManager.primary,):null,
                                         ),
                                         trailing: const Icon(Icons
                                             .keyboard_arrow_right_outlined),
@@ -152,17 +155,18 @@ class _SearchRouteState extends State<SearchRoute> {
                                             userProvider.setTargetUserData(
                                                 targetUserData: targetUserData);
                                             //akjfna
-                                            
+
                                             if (mounted) {
                                               messageStreamProvider
-                                                .initStreamAndStore(
-                                                  userId: userProvider.userData.userId!,
-                                              context: context,
-                                              chatSpaceId: chatSpaceProvider
-                                                  .chatSpaceData.chatSpaceId!,
-                                            );
-                                            chatSpaceProvider
-                                                .removeAllSelectedMessages();
+                                                  .initStreamAndStore(
+                                                userId: userProvider
+                                                    .userData.userId!,
+                                                context: context,
+                                                chatSpaceId: chatSpaceProvider
+                                                    .chatSpaceData.chatSpaceId!,
+                                              );
+                                              chatSpaceProvider
+                                                  .removeAllSelectedMessages();
                                               Navigator.pushNamed(
                                                   context, RouteName.chatspace);
                                             }
@@ -237,11 +241,14 @@ class _SearchRouteState extends State<SearchRoute> {
                                           radius: 20,
                                           backgroundColor:
                                               themeManager.onprimary,
-                                          backgroundImage: (targetUserData
-                                                  .profilePicture!=null)
-                                              ? NetworkImage(targetUserData
-                                                  .profilePicture!)
-                                              : null,
+                                          backgroundImage:
+                                              (targetUserData.profilePicture !=
+                                                      null)
+                                                  ? NetworkImage(targetUserData
+                                                      .profilePicture!)
+                                                  : null,
+                                          child: (targetUserData.profilePicture ==
+                                                      null)? Icon(Icons.person, color: themeManager.primary,):null,
                                         ),
                                         trailing: const Icon(Icons
                                             .keyboard_arrow_right_outlined),
@@ -261,7 +268,8 @@ class _SearchRouteState extends State<SearchRoute> {
                                           if (mounted) {
                                             messageStreamProvider
                                                 .initStreamAndStore(
-                                                  userId: userProvider.userData.userId!,
+                                              userId:
+                                                  userProvider.userData.userId!,
                                               context: context,
                                               chatSpaceId: chatSpaceProvider
                                                   .chatSpaceData.chatSpaceId!,

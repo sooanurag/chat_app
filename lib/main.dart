@@ -9,6 +9,7 @@ import 'package:chat_app/view_model/home/search_provider.dart';
 import 'package:chat_app/view_model/home/stream_provider.dart';
 import 'package:chat_app/view_model/theme/theme_manager.dart';
 import 'package:chat_app/view_model/user_provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -46,7 +47,7 @@ class MainApp extends StatelessWidget {
             theme: lightTheme,
             darkTheme: darkTheme,
             onGenerateRoute: Routes.generateRoute,
-            initialRoute: RouteName.splash,
+            initialRoute: (FirebaseAuth.instance.currentUser != null)? RouteName.home : RouteName.splash,
           );
         },
       ),

@@ -86,11 +86,7 @@ class _ChatSpaceRouteState extends State<ChatSpaceRoute> {
 
     chatSpaceProvider?.chatSpaceData.whichChatSpaceUserActive!
         .update(userProvider!.userData.userId!, (value) => value = false);
-    // chatSpaceProvider?.chatSpaceData.whichChatSpaceUserActive = {
-    //   userProvider!.userData.userId!: false,
-    //   userProvider!.targetuserData.userId!: chatSpaceProvider?.chatSpaceData
-    //       .whichChatSpaceUserActive![userProvider?.targetuserData.userId!],
-    // };
+    
     FirebaseFirestore.instance
         .collection("chatspace")
         .doc(chatSpaceProvider?.chatSpaceData.chatSpaceId)
@@ -141,6 +137,7 @@ class _ChatSpaceRouteState extends State<ChatSpaceRoute> {
                               ? NetworkImage(
                                   userProvider.targetuserData.profilePicture!)
                               : null,
+                          child: Icon(Icons.person,color: themeManager.primary,),
                         ),
                         const SizedBox(
                           width: 14,
@@ -216,11 +213,15 @@ class _ChatSpaceRouteState extends State<ChatSpaceRoute> {
                               ),
                               PopupMenuItem(
                                 child: const Text("Block"),
-                                onTap: () {},
+                                onTap: () {
+                                  Utils.snackBar("Not available", context);
+                                },
                               ),
                               PopupMenuItem(
                                 child: const Text("Pin"),
-                                onTap: () {},
+                                onTap: () {
+                                  Utils.snackBar("Not available", context);
+                                },
                               ),
                             ],
                           )
@@ -620,7 +621,7 @@ class _ChatSpaceRouteState extends State<ChatSpaceRoute> {
                                                                   .targetuserData
                                                                   .fullName!,
                                                           replyMessageData:
-                                                              currentMessage,
+                                                               currentMessage,
                                                           chatSpaceProvider:
                                                               chatSpaceProvider,
                                                         ),
